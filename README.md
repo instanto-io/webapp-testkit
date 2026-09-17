@@ -84,3 +84,9 @@ it builds on:
 - [Support Instanto](https://github.com/sponsors/instanto-io).
 - [Support TeaVM](https://github.com/sponsors/konsoletyper), the compiler that
   brings Java to the browser.
+
+## Shared build parent
+
+For local builds, install the shared parent from a sibling `instanto-poms`
+checkout with `mvn -f ../instanto-poms/pom.xml install`. Release instructions
+are in `instanto-poms/RELEASING.md`.
