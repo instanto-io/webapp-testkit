@@ -50,8 +50,10 @@
   <!-- JUnit rule support is a separate library now. -->
   <repositories>
     <repository>
-      <id>github-teavm-rule-support</id>
-      <url>https://maven.pkg.github.com/instanto-io/teavm-rule-support</url>
+      <!-- Every Instanto package, not just one repository's: this build also needs
+           mockatcha-core, which teavm-rule-support's registry does not serve. -->
+      <id>github</id>
+      <url>https://maven.pkg.github.com/instanto-io/*</url>
       <releases><enabled>true</enabled></releases>
       <snapshots><enabled>true</enabled></snapshots>
     </repository>
