@@ -34,35 +34,17 @@
     <module>webapp-testkit-examples</module>
   </modules>
 
-  <distributionManagement>
-    <repository>
-      <id>github-webapp-testkit</id>
-      <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/instanto-io/webapp-testkit</url>
-    </repository>
-    <snapshotRepository>
-      <id>github-webapp-testkit</id>
-      <name>GitHub Packages</name>
-      <url>https://maven.pkg.github.com/instanto-io/webapp-testkit</url>
-    </snapshotRepository>
-  </distributionManagement>
-
   <!-- JUnit rule support is a separate library now. -->
   <repositories>
-    <!-- GitHub Packages serves each repository's artifacts from its own URL, so
-         every repository this build depends on is named here. -->
+    <!-- One coordinate-based registry contains the published Instanto snapshots. -->
     <repository>
-      <id>github-teavm-rule-support</id>
-      <url>https://maven.pkg.github.com/instanto-io/teavm-rule-support</url>
-      <releases><enabled>true</enabled></releases>
+      <id>forgejo</id>
+      <name>Instanto snapshots</name>
+      <url>https://packages.instanto.io/api/packages/instanto-io/maven</url>
+      <releases><enabled>false</enabled></releases>
       <snapshots><enabled>true</enabled></snapshots>
     </repository>
-    <repository>
-      <id>github-mockatcha</id>
-      <url>https://maven.pkg.github.com/instanto-io/mockatcha</url>
-      <releases><enabled>true</enabled></releases>
-      <snapshots><enabled>true</enabled></snapshots>
-    </repository>
+
   </repositories>
 
   <scm>
