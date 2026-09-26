@@ -10,16 +10,10 @@ parts of a test that can be mocked. Time is handled here: the fake clock is part
 of this module, because controlling timers is a property of driving a UI rather
 than of stubbing a collaborator.
 
-## Add the module
+## Use the module
 
-```xml
-<dependency>
-  <groupId>io.instanto</groupId>
-  <artifactId>webapp-testkit-dom</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
-  <scope>test</scope>
-</dependency>
-```
+Use this module in TeaVM browser tests. The
+[getting-started guide](../docs/getting-started.md) shows the current test setup.
 
 Webapp Testkit DOM is part of the Webapp Testkit and does not depend on
 `mockatcha-core`; nothing in it knows about mocking. Add
@@ -34,26 +28,8 @@ and available to the test process. The runner is selected with the
 `DomRule` and the other rules here are JUnit rules, and TeaVM's own runner ignores
 rules unless [`io.instanto:teavm-rule-support`](https://github.com/instanto-io/teavm-rule-support)
 shadows it. Declare it **before** `teavm-junit`, because a shadowed class is chosen
-by classpath order:
-
-```xml
-<!-- Declared first, so its classes take precedence over teavm-junit's. -->
-<dependency>
-  <groupId>io.instanto</groupId>
-  <artifactId>teavm-rule-support</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
-  <scope>test</scope>
-</dependency>
-<dependency>
-  <groupId>org.teavm</groupId>
-  <artifactId>teavm-junit</artifactId>
-  <scope>test</scope>
-</dependency>
-```
-
-Getting this wrong used to be silent — rules were skipped and tests passed without
-them. Rule support now checks the ordering while compiling and fails the build,
-naming both jars, so a misordered classpath cannot pass unnoticed.
+by classpath order. Rule support checks the ordering while compiling and
+reports a misordered classpath.
 
 ## Set up the test boundary
 

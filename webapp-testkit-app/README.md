@@ -20,47 +20,23 @@ HTML head, before application scripts run. This reports startup exceptions, fail
 resources and unhandled promise rejections. It does not select, replace or load
 application assets. The original build output is unchanged.
 
-## Add the module
+## Use the module
 
-```xml
-<dependency>
-  <groupId>io.instanto</groupId>
-  <artifactId>webapp-testkit-app</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
-  <scope>test</scope>
-</dependency>
-```
+Use this module in TeaVM browser tests. The
+[getting-started guide](../docs/getting-started.md) shows the current test setup.
 
 `DomRule` and the other rules here are JUnit rules, and TeaVM's own runner ignores
 rules unless [`io.instanto:teavm-rule-support`](https://github.com/instanto-io/teavm-rule-support)
 shadows it. Declare it **before** `teavm-junit`, because a shadowed class is chosen
-by classpath order:
-
-```xml
-<!-- Declared first, so its classes take precedence over teavm-junit's. -->
-<dependency>
-  <groupId>io.instanto</groupId>
-  <artifactId>teavm-rule-support</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
-  <scope>test</scope>
-</dependency>
-<dependency>
-  <groupId>org.teavm</groupId>
-  <artifactId>teavm-junit</artifactId>
-  <scope>test</scope>
-</dependency>
-```
-
-Getting this wrong used to be silent — rules were skipped and tests passed without
-them. Rule support now checks the ordering while compiling and fails the build,
-naming both jars, so a misordered classpath cannot pass unnoticed.
+by classpath order. Rule support checks the ordering while compiling and
+reports a misordered classpath.
 
 `ApplicationRule` is the module's main entry point and is a JUnit rule, so without
 this it is skipped and the application is never opened.
 
 ## Build setup
 
-Add `io.instanto:webapp-testkit-app:0.1.0-SNAPSHOT` as a test dependency.
+Include Webapp Testkit App in the test classpath.
 Run its Java entry point after building the subject application, before browser
 tests. For example, configure `exec-maven-plugin`:
 
