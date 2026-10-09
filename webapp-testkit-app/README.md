@@ -26,7 +26,7 @@ Use this module in TeaVM browser tests. The
 [getting-started guide](../docs/getting-started.md) shows the current test setup.
 
 `DomRule` and the other rules here are JUnit rules, and TeaVM's own runner ignores
-rules unless [`io.instanto:teavm-rule-support`](https://github.com/instanto-io/teavm-rule-support)
+rules unless [`io.instanto:instanto-teavm-extensions`](https://github.com/instanto-io/instanto-teavm)
 shadows it. Declare it **before** `teavm-junit`, because a shadowed class is chosen
 by classpath order. Rule support checks the ordering while compiling and
 reports a misordered classpath.
@@ -209,7 +209,7 @@ The sample test uses these dependencies:
 | --- | --- |
 | `webapp-testkit-dom` | Queries, interactions, waiting, and assertions. |
 | `webapp-testkit-app` | Stages the application, then hosts it with `ApplicationRule`. |
-| `teavm-rule-support` | Runs rules, including `ApplicationRule`, under TeaVM. |
+| `instanto-teavm-extensions` | Runs rules, including `ApplicationRule`, under TeaVM. |
 | `teavm-classlib` | Supplies TeaVM's Java class-library implementation. |
 | `teavm-junit` | Compiles and runs the JUnit test through TeaVM. |
 | `junit` | Supplies `@Test`, `@Rule`, and assertions. |

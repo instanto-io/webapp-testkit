@@ -40,7 +40,7 @@
     <!-- Declared before teavm-junit so rules run in this module's own tests. -->
     <dependency>
       <groupId>io.instanto</groupId>
-      <artifactId>teavm-rule-support</artifactId>
+      <artifactId>instanto-teavm-extensions</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

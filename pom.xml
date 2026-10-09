@@ -34,7 +34,7 @@
     <module>webapp-testkit-examples</module>
   </modules>
 
-  <!-- JUnit rule support is a separate library now. -->
+  <!-- JUnit rule support is supplied by instanto-teavm-extensions. -->
   <repositories>
     <!-- One coordinate-based registry contains the published Instanto snapshots. -->
     <repository>
@@ -58,7 +58,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>21</maven.compiler.release>
     <junit.version>4.13.2</junit.version>
-    <teavm-rule-support.version>0.1.0-SNAPSHOT</teavm-rule-support.version>
     <!-- Only the examples use it, to show a mocked boundary behind a UI. -->
     <mockatcha.version>0.1.0-SNAPSHOT</mockatcha.version>
     <webapp.testkit.test.browser>browser-chrome</webapp.testkit.test.browser>
@@ -80,11 +79,6 @@
         <groupId>io.instanto</groupId>
         <artifactId>webapp-testkit-app</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>io.instanto</groupId>
-        <artifactId>teavm-rule-support</artifactId>
-        <version>${teavm-rule-support.version}</version>
       </dependency>
       <dependency>
         <groupId>io.instanto</groupId>

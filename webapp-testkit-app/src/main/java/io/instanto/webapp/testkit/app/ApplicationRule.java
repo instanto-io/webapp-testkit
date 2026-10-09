@@ -32,7 +32,8 @@ import org.junit.runners.model.Statement;
  * torn down between tests, but tests never handle the frame. Use {@link #application()} for the
  * cases that do, such as comparing two instances of the same application.
  *
- * <p>TeaVM tests need the reusable {@code teavm-rule-support} module for rules to run at all.
+ * <p>TeaVM tests need the reusable {@code instanto-teavm-extensions} module for rules to run at
+ * all.
  */
 public final class ApplicationRule implements TestRule {
 

@@ -58,7 +58,7 @@ Java 21 and Maven. These are real browser tests: TeaVM does not bundle a browser
 Chrome or Firefox must be installed and available to the build.
 
 JUnit rules under TeaVM need
-[`io.instanto:teavm-rule-support`](https://github.com/instanto-io/teavm-rule-support)
+[`io.instanto:instanto-teavm-extensions`](https://github.com/instanto-io/instanto-teavm)
 ahead of `teavm-junit` on the test classpath. That library is separate and depends on
 nothing of its own.
 

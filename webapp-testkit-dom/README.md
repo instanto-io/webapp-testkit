@@ -26,7 +26,7 @@ and available to the test process. The runner is selected with the
 `webapp.testkit.test.browser`; set it to `browser-firefox` to use Firefox instead.
 
 `DomRule` and the other rules here are JUnit rules, and TeaVM's own runner ignores
-rules unless [`io.instanto:teavm-rule-support`](https://github.com/instanto-io/teavm-rule-support)
+rules unless [`io.instanto:instanto-teavm-extensions`](https://github.com/instanto-io/instanto-teavm)
 shadows it. Declare it **before** `teavm-junit`, because a shadowed class is chosen
 by classpath order. Rule support checks the ordering while compiling and
 reports a misordered classpath.
@@ -60,7 +60,7 @@ public DomRule dom = new DomRule();
 ```
 
 TeaVM needs JUnit rule support to execute the rule. The reusable
-separate `io.instanto:teavm-rule-support` library provides it. If a
+separate `io.instanto:instanto-teavm-extensions` library provides it. If a
 runner cannot execute rules, extend `DomTest` for equivalent `@After` cleanup.
 `Dom.reset()` is also available for manual cleanup.
 

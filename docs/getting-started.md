@@ -9,7 +9,7 @@ Two artifacts are needed for a test that uses rules. Declare rule support **befo
 <!-- Declared first: its classes take precedence over teavm-junit's. -->
 <dependency>
   <groupId>io.instanto</groupId>
-  <artifactId>teavm-rule-support</artifactId>
+  <artifactId>instanto-teavm-extensions</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <scope>test</scope>
 </dependency>

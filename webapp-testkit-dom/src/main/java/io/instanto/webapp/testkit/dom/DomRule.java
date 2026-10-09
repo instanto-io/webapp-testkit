@@ -17,7 +17,7 @@ import org.junit.runners.model.Statement;
  * public DomRule dom = new DomRule();
  * }</pre>
  *
- * <p>TeaVM tests need the reusable {@code teavm-rule-support} module. {@link DomTest} is the
+ * <p>TeaVM tests need the reusable {@code instanto-teavm-extensions} module. {@link DomTest} is the
  * fallback when rule support cannot be installed.
  */
 public final class DomRule implements TestRule {
