@@ -12,7 +12,7 @@ import org.teavm.jso.dom.html.HTMLDocument;
 /**
  * A TeaVM application, compiled to JavaScript by this build and then tested as deployed output.
  *
- * <p>{@link TimesheetComponentTeaVmTest} drives the same component in the test's own page. This is
+ * <p>{@code TimesheetComponentTeaVmTest} drives the same component in the test's own page. This is
  * the other half: the application is compiled, staged onto the test classpath and opened through
  * its own entry point, so the test covers its startup and asset paths as well as its behaviour.
  */
