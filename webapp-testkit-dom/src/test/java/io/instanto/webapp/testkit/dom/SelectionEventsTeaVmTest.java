@@ -30,15 +30,15 @@ import org.teavm.junit.TeaVMTestRunner;
 @SkipJVM
 public class SelectionEventsTeaVmTest {
 
-  @Rule
-  public DomRule dom = new DomRule();
+  @Rule public DomRule dom = new DomRule();
 
   private final List<String> seen = new ArrayList<>();
 
   @Test
   public void selectingAnOptionChangesItsValueAndReportsBothEvents() {
-    render("<select id='status'><option value='open'>Open</option>"
-        + "<option value='closed'>Closed</option></select>");
+    render(
+        "<select id='status'><option value='open'>Open</option>"
+            + "<option value='closed'>Closed</option></select>");
     listen(find("#status"), "input");
     listen(find("#status"), "change");
 
@@ -61,10 +61,11 @@ public class SelectionEventsTeaVmTest {
 
   @Test
   public void selectsSeveralOptions() {
-    render("<select id='teams' multiple>"
-        + "<option value='ops'>Operations</option>"
-        + "<option value='analytics'>Analytics</option>"
-        + "<option value='airports'>Airports</option></select>");
+    render(
+        "<select id='teams' multiple>"
+            + "<option value='ops'>Operations</option>"
+            + "<option value='analytics'>Analytics</option>"
+            + "<option value='airports'>Airports</option></select>");
 
     selectOptions("#teams", "ops", "airports");
 
@@ -75,8 +76,9 @@ public class SelectionEventsTeaVmTest {
 
   @Test
   public void aMissingOptionDoesNotChangeTheSelection() {
-    render("<select id='status'><option value='open'>Open</option>"
-        + "<option value='closed'>Closed</option></select>");
+    render(
+        "<select id='status'><option value='open'>Open</option>"
+            + "<option value='closed'>Closed</option></select>");
 
     assertThrows(AssertionError.class, () -> selectOptions("#status", "missing"));
 
@@ -85,11 +87,11 @@ public class SelectionEventsTeaVmTest {
 
   @Test
   public void aSingleSelectRejectsSeveralValues() {
-    render("<select id='status'><option value='open'>Open</option>"
-        + "<option value='closed'>Closed</option></select>");
+    render(
+        "<select id='status'><option value='open'>Open</option>"
+            + "<option value='closed'>Closed</option></select>");
 
-    assertThrows(
-        IllegalArgumentException.class, () -> selectOptions("#status", "open", "closed"));
+    assertThrows(IllegalArgumentException.class, () -> selectOptions("#status", "open", "closed"));
   }
 
   private void listen(org.teavm.jso.dom.html.HTMLElement element, String type) {

@@ -5,10 +5,10 @@
  */
 package io.instanto.webapp.testkit.dom;
 
-import java.util.Iterator;
-import java.util.Map;
 import io.instanto.webapp.testkit.layout.Layout;
 import io.instanto.webapp.testkit.layout.LayoutRelation;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Objects;
 import org.teavm.jso.dom.html.HTMLElement;
 
@@ -20,8 +20,8 @@ import org.teavm.jso.dom.html.HTMLElement;
  * expect(find(".row")).not().toHaveClass("muted");
  * }</pre>
  *
- * <p>A failure prints the element it was given. {@link ElementExpectation#not()} applies to the
- * one expectation that follows it, as it does in Jasmine.
+ * <p>A failure prints the element it was given. {@link ElementExpectation#not()} applies to the one
+ * expectation that follows it, as it does in Jasmine.
  */
 public final class Expect {
 
@@ -78,9 +78,7 @@ public final class Expect {
     public ElementExpectation toHaveValue(String expected) {
       String actual = Browser.value(element);
       return check(
-          Objects.equals(expected, actual),
-          "the value \"" + expected + "\"",
-          "\"" + actual + "\"");
+          Objects.equals(expected, actual), "the value \"" + expected + "\"", "\"" + actual + "\"");
     }
 
     /** Expects the accessible name calculated from labels, ARIA, or element content. */
@@ -200,7 +198,9 @@ public final class Expect {
     public ElementExpectation toContainHtml(String expected) {
       String markup = Browser.innerHtml(element);
       return check(
-          markup.contains(expected), "markup containing \"" + expected + "\"", "\"" + markup + "\"");
+          markup.contains(expected),
+          "markup containing \"" + expected + "\"",
+          "\"" + markup + "\"");
     }
 
     /** Expects named controls inside this form or container to have these values. */
@@ -231,8 +231,13 @@ public final class Expect {
 
     public ElementExpectation toHaveWidth(double expected, double tolerance) {
       ElementBox box = ElementBox.of(element);
-      return checkExtent(Layout.hasWidth(box, expected, tolerance),
-          "width", box, expected, box.width(), tolerance);
+      return checkExtent(
+          Layout.hasWidth(box, expected, tolerance),
+          "width",
+          box,
+          expected,
+          box.width(),
+          tolerance);
     }
 
     public ElementExpectation toHaveHeight(double expected) {
@@ -241,8 +246,13 @@ public final class Expect {
 
     public ElementExpectation toHaveHeight(double expected, double tolerance) {
       ElementBox box = ElementBox.of(element);
-      return checkExtent(Layout.hasHeight(box, expected, tolerance),
-          "height", box, expected, box.height(), tolerance);
+      return checkExtent(
+          Layout.hasHeight(box, expected, tolerance),
+          "height",
+          box,
+          expected,
+          box.height(),
+          tolerance);
     }
 
     public ElementExpectation toBeBelow(HTMLElement reference) {
@@ -331,12 +341,18 @@ public final class Expect {
       requireSameDocument(reference);
       ElementBox subject = ElementBox.of(element);
       ElementBox against = ElementBox.of(reference);
-      return report(Layout.holds(relation, subject, against, tolerance),
+      return report(
+          Layout.holds(relation, subject, against, tolerance),
           Layout.explain(relation, subject, against, tolerance));
     }
 
-    private ElementExpectation checkExtent(boolean held, String extent, ElementBox box,
-        double expected, double actual, double tolerance) {
+    private ElementExpectation checkExtent(
+        boolean held,
+        String extent,
+        ElementBox box,
+        double expected,
+        double actual,
+        double tolerance) {
       return report(held, Layout.explainExtent(extent, box, expected, actual, tolerance));
     }
 
@@ -345,15 +361,19 @@ public final class Expect {
       if (!Browser.sameDocument(element, reference)) {
         throw new IllegalArgumentException(
             "Cannot compare rectangles across documents: the element is in "
-                + Browser.documentLocation(element) + " and the reference is in "
+                + Browser.documentLocation(element)
+                + " and the reference is in "
                 + Browser.documentLocation(reference));
       }
     }
 
     private ElementExpectation report(boolean held, String explanation) {
       if (held == negated) {
-        throw new AssertionError((negated ? "Wanted the opposite: " : "") + explanation
-            + ".\nThe element is:\n" + Browser.outerHtml(element));
+        throw new AssertionError(
+            (negated ? "Wanted the opposite: " : "")
+                + explanation
+                + ".\nThe element is:\n"
+                + Browser.outerHtml(element));
       }
       return negated ? new ElementExpectation(element, false) : this;
     }
@@ -361,8 +381,13 @@ public final class Expect {
     private ElementExpectation check(boolean held, String wanted, String actual) {
       if (held == negated) {
         throw new AssertionError(
-            "Wanted " + (negated ? "no " : "") + wanted + " but found " + actual
-                + ".\nThe element is:\n" + Browser.outerHtml(element));
+            "Wanted "
+                + (negated ? "no " : "")
+                + wanted
+                + " but found "
+                + actual
+                + ".\nThe element is:\n"
+                + Browser.outerHtml(element));
       }
       return negated ? new ElementExpectation(element, false) : this;
     }

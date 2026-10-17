@@ -52,7 +52,8 @@ public final class TextMatch {
   }
 
   String description() {
-    return (containing ? "containing " : "equal to ") + quote(wanted)
+    return (containing ? "containing " : "equal to ")
+        + quote(wanted)
         + (ignoringCase ? " ignoring case" : "");
   }
 

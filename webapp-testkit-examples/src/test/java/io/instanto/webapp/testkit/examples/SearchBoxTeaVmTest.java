@@ -15,7 +15,6 @@ import static io.instanto.webapp.testkit.dom.Dom.findAll;
 import static io.instanto.webapp.testkit.dom.Dom.render;
 import static io.instanto.webapp.testkit.dom.Dom.type;
 import static io.instanto.webapp.testkit.dom.Expect.expect;
-
 import static org.junit.Assert.assertEquals;
 
 import io.instanto.mockatcha.ArgumentMatchers;
@@ -42,8 +41,7 @@ import org.teavm.junit.TeaVMTestRunner;
 @SkipJVM
 public class SearchBoxTeaVmTest {
 
-  @Rule
-  public DomRule dom = new DomRule();
+  @Rule public DomRule dom = new DomRule();
 
   @After
   public void restoreTheClock() {
@@ -124,12 +122,16 @@ public class SearchBoxTeaVmTest {
       Rendering.setInnerHtml(results, markup.toString());
     }
 
-    @org.teavm.jso.JSBody(params = {"element"}, script = "return element.value;")
+    @org.teavm.jso.JSBody(
+        params = {"element"},
+        script = "return element.value;")
     private static native String valueOf(HTMLElement element);
   }
 
   static final class Rendering {
-    @org.teavm.jso.JSBody(params = {"element", "html"}, script = "element.innerHTML = html;")
+    @org.teavm.jso.JSBody(
+        params = {"element", "html"},
+        script = "element.innerHTML = html;")
     static native void setInnerHtml(HTMLElement element, String html);
   }
 }

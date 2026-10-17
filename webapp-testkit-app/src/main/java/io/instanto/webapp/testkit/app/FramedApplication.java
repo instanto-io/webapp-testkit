@@ -41,7 +41,8 @@ public final class FramedApplication implements AutoCloseable {
   /** Keeps the frame rendered so layout, focus and visibility assertions remain meaningful. */
   public FramedApplication resize(int width, int height) {
     requireOpen();
-    if (width <= 0 || height <= 0) throw new IllegalArgumentException("Frame size must be positive");
+    if (width <= 0 || height <= 0)
+      throw new IllegalArgumentException("Frame size must be positive");
     frame.setAttribute("width", Integer.toString(width));
     frame.setAttribute("height", Integer.toString(height));
     frame.setAttribute("style", "border:0;display:block");
@@ -52,12 +53,16 @@ public final class FramedApplication implements AutoCloseable {
   public FramedApplication awaitReady(Predicate<DomScope> ready, int timeoutMilliseconds) {
     Objects.requireNonNull(ready, "ready");
     try {
-      Dom.waitFor(() -> {
-        DomScope scope = page();
-        if (!ready.test(scope)) throw new AssertionError("Application readiness condition is false");
-      }, timeoutMilliseconds);
+      Dom.waitFor(
+          () -> {
+            DomScope scope = page();
+            if (!ready.test(scope))
+              throw new AssertionError("Application readiness condition is false");
+          },
+          timeoutMilliseconds);
     } catch (AssertionError failure) {
-      throw new AssertionError("Application " + url + " did not become ready: " + failure.getMessage(), failure);
+      throw new AssertionError(
+          "Application " + url + " did not become ready: " + failure.getMessage(), failure);
     }
     return this;
   }
@@ -71,8 +76,10 @@ public final class FramedApplication implements AutoCloseable {
     assertHealthy();
     HTMLElement body = body(frame);
     if (body == null || !hasDiagnostics(frame)) {
-      throw new AssertionError("Waiting for " + url
-          + "; stage the application with ApplicationFiles to capture startup errors");
+      throw new AssertionError(
+          "Waiting for "
+              + url
+              + "; stage the application with ApplicationFiles to capture startup errors");
     }
     return Dom.within(body);
   }
@@ -120,9 +127,12 @@ public final class FramedApplication implements AutoCloseable {
     if (closed) throw new IllegalStateException("Application frame is closed: " + url);
   }
 
-  @JSBody(params = "url", script = "try { var target = new URL(url, document.baseURI);"
-      + "return /^https?:$/.test(target.protocol) && target.origin === location.origin;"
-      + "} catch (error) { return false; }")
+  @JSBody(
+      params = "url",
+      script =
+          "try { var target = new URL(url, document.baseURI);"
+              + "return /^https?:$/.test(target.protocol) && target.origin === location.origin;"
+              + "} catch (error) { return false; }")
   private static native boolean isSameOriginUrl(String url);
 
   @JSBody(params = "frame", script = "return frame.contentWindow;")
@@ -134,10 +144,13 @@ public final class FramedApplication implements AutoCloseable {
   @JSBody(params = "frame", script = "return !!frame.contentWindow.__webappTestkitDiagnostics;")
   private static native boolean hasDiagnostics(HTMLElement frame);
 
-  @JSBody(params = "frame", script = "try {"
-      + " var doc = frame.contentWindow.document;"
-      + " var diagnostics = frame.contentWindow.__webappTestkitDiagnostics;"
-      + " return diagnostics && diagnostics.errors.length ? diagnostics.errors.join('\\n') : null;"
-      + "} catch (error) { return 'Cannot inspect application: cross-origin navigation or inaccessible document'; }")
+  @JSBody(
+      params = "frame",
+      script =
+          "try {"
+              + " var doc = frame.contentWindow.document;"
+              + " var diagnostics = frame.contentWindow.__webappTestkitDiagnostics;"
+              + " return diagnostics && diagnostics.errors.length ? diagnostics.errors.join('\\n') : null;"
+              + "} catch (error) { return 'Cannot inspect application: cross-origin navigation or inaccessible document'; }")
   private static native String failure(HTMLElement frame);
 }

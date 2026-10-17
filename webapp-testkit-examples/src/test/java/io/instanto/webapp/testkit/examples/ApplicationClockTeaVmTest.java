@@ -30,9 +30,10 @@ import org.teavm.junit.TeaVMTestRunner;
 public class ApplicationClockTeaVmTest {
 
   @Rule
-  public ApplicationRule app = new ApplicationRule("/resources/applications/webfx/index.html")
-      .readyWhen(page -> laidOutShape(page) != null)
-      .readyWithin(20_000);
+  public ApplicationRule app =
+      new ApplicationRule("/resources/applications/webfx/index.html")
+          .readyWhen(page -> laidOutShape(page) != null)
+          .readyWithin(20_000);
 
   private static HTMLElement laidOutShape(DomScope page) {
     for (HTMLElement circle : page.findAll("fx-circle")) {
@@ -65,14 +66,18 @@ public class ApplicationClockTeaVmTest {
       // Real time passes; the application's next frame is waiting on the clock, so nothing moves.
       realDelay(300);
       ElementBox stillFrozen = Dom.layout(circle);
-      assertEquals("the animation is held still: " + frozen + " then " + stillFrozen,
-          frozen.left(), stillFrozen.left(), 0.01);
+      assertEquals(
+          "the animation is held still: " + frozen + " then " + stillFrozen,
+          frozen.left(),
+          stillFrozen.left(),
+          0.01);
       assertEquals(frozen.top(), stillFrozen.top(), 0.01);
 
       // Fake time moves, so the frames the application scheduled now run.
       clock.tick(500);
       ElementBox advanced = Dom.layout(circle);
-      assertTrue("ticking the clock advanced the animation: " + frozen + " then " + advanced,
+      assertTrue(
+          "ticking the clock advanced the animation: " + frozen + " then " + advanced,
           Math.abs(advanced.left() - frozen.left()) > 0.5
               || Math.abs(advanced.top() - frozen.top()) > 0.5);
     } finally {
@@ -123,12 +128,15 @@ public class ApplicationClockTeaVmTest {
       // Dom.waitFor still resumes, because it kept hold of the real timer when the clock replaced
       // it. Thread.sleep would not: TeaVM schedules it through the very setTimeout now faked, so
       // it never wakes. Wait through the library, not through the language.
-      Dom.waitFor(() -> {
-        ElementBox now = Dom.layout(circle);
-        assertTrue("the application kept its own timers: " + before + " then " + now,
-            Math.abs(now.left() - before.left()) > 0.5
-                || Math.abs(now.top() - before.top()) > 0.5);
-      }, 5_000);
+      Dom.waitFor(
+          () -> {
+            ElementBox now = Dom.layout(circle);
+            assertTrue(
+                "the application kept its own timers: " + before + " then " + now,
+                Math.abs(now.left() - before.left()) > 0.5
+                    || Math.abs(now.top() - before.top()) > 0.5);
+          },
+          5_000);
     } finally {
       Dom.clock().uninstall();
     }

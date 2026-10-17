@@ -37,8 +37,9 @@ public class ScopedQueriesTeaVmTest {
 
   @Test
   public void scopesAQueryToOnePartOfThePage() {
-    render("<article id='first'><h2>Draft</h2><button>Save</button></article>"
-        + "<article id='second'><h2>Submitted</h2><button>Save</button></article>");
+    render(
+        "<article id='first'><h2>Draft</h2><button>Save</button></article>"
+            + "<article id='second'><h2>Submitted</h2><button>Save</button></article>");
 
     DomScope submitted = within(find("#second"));
 
@@ -68,9 +69,10 @@ public class ScopedQueriesTeaVmTest {
 
   @Test
   public void findsFieldsAndImagesThroughUserFacingAttributes() {
-    render("<input placeholder='Search activities' value='OPS-142'>"
-        + "<img alt='Airport map' src='map.png'>"
-        + "<button title='Close panel'>×</button>");
+    render(
+        "<input placeholder='Search activities' value='OPS-142'>"
+            + "<img alt='Airport map' src='map.png'>"
+            + "<button title='Close panel'>×</button>");
 
     expect(findByPlaceholderText("Search activities")).toHaveValue("OPS-142");
     expect(findByDisplayValue("OPS-142")).toHaveAttribute("placeholder", "Search activities");
@@ -80,11 +82,12 @@ public class ScopedQueriesTeaVmTest {
 
   @Test
   public void filtersRolesByLevelAndAriaState() {
-    render("<h2>Activities</h2><h3>History</h3>"
-        + "<button aria-pressed='true'>Grid</button>"
-        + "<button aria-expanded='false'>Filters</button>"
-        + "<input type='checkbox' aria-label='Weekends' checked>"
-        + "<div role='option' aria-selected='true'>July</div>");
+    render(
+        "<h2>Activities</h2><h3>History</h3>"
+            + "<button aria-pressed='true'>Grid</button>"
+            + "<button aria-expanded='false'>Filters</button>"
+            + "<input type='checkbox' aria-label='Weekends' checked>"
+            + "<div role='option' aria-selected='true'>July</div>");
 
     expect(findByRole(role("heading").level(2))).toHaveText("Activities");
     expect(findByRole(role("button").pressed(true))).toHaveText("Grid");

@@ -61,15 +61,17 @@ public final class TimesheetComponent {
 
     HTMLElement add = document.createElement("button");
     add.setTextContent("Add");
-    add.addEventListener("click", event -> {
-      String text = entry.getValue().trim();
-      if (!text.isEmpty()) {
-        HTMLElement item = document.createElement("li");
-        item.setTextContent(text);
-        entries.appendChild(item);
-        entry.setValue("");
-      }
-    });
+    add.addEventListener(
+        "click",
+        event -> {
+          String text = entry.getValue().trim();
+          if (!text.isEmpty()) {
+            HTMLElement item = document.createElement("li");
+            item.setTextContent(text);
+            entries.appendChild(item);
+            entry.setValue("");
+          }
+        });
     section.appendChild(add);
 
     status = document.createElement("output");
@@ -78,10 +80,12 @@ public final class TimesheetComponent {
 
     HTMLElement submit = document.createElement("button");
     submit.setTextContent("Submit");
-    submit.addEventListener("click", event -> {
-      service.submit(month);
-      status.setTextContent("Submitted");
-    });
+    submit.addEventListener(
+        "click",
+        event -> {
+          service.submit(month);
+          status.setTextContent("Submitted");
+        });
     section.appendChild(submit);
 
     return section;

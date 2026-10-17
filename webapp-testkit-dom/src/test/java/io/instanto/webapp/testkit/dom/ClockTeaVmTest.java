@@ -105,8 +105,7 @@ public class ClockTeaVmTest {
   public void resumesAPromiseContinuationWhileTheClockIsInstalled() {
     clock().install();
     JSPromise<String> result =
-        new JSPromise<>(
-            (resolve, reject) -> Window.setTimeout(() -> resolve.accept("ready"), 100));
+        new JSPromise<>((resolve, reject) -> Window.setTimeout(() -> resolve.accept("ready"), 100));
 
     clock().tick(100);
 
@@ -159,11 +158,24 @@ public class ClockTeaVmTest {
   }
 
   @Test
+  public void calendarDateArgumentsSurviveTheClockReplacement() {
+    clock().install();
+    var date = org.teavm.jso.core.JSDate.create(2020, 1, 2, 3, 4, 5, 6);
+    assertEquals(2020, date.getFullYear());
+    assertEquals(1, date.getMonth());
+    assertEquals(2, date.getDate());
+    assertEquals(3, date.getHours());
+    assertEquals(4, date.getMinutes());
+    assertEquals(5, date.getSeconds());
+    assertEquals(6, date.getMilliseconds());
+  }
+
+  @Test
   public void countsWorkThatIsStillWaiting() {
     clock().install();
 
-    Window.setTimeout(() -> { }, 100);
-    Window.setTimeout(() -> { }, 200);
+    Window.setTimeout(() -> {}, 100);
+    Window.setTimeout(() -> {}, 200);
 
     assertEquals(2, clock().pending());
     clock().tick(150);
@@ -191,7 +203,7 @@ public class ClockTeaVmTest {
 
     assertEquals(false, clock().isInstalled());
     // A real timer can be scheduled and cancelled again without the clock intercepting it.
-    Window.clearTimeout(Window.setTimeout(() -> { }, 100_000));
+    Window.clearTimeout(Window.setTimeout(() -> {}, 100_000));
   }
 
   @Test
@@ -245,7 +257,9 @@ public class ClockTeaVmTest {
     void run(double timestamp);
   }
 
-  @JSBody(params = {"callback"}, script = "requestAnimationFrame(callback);")
+  @JSBody(
+      params = {"callback"},
+      script = "requestAnimationFrame(callback);")
   private static native int requestAnimationFrame(AnimationFrameCallback callback);
 
   public interface Feed {

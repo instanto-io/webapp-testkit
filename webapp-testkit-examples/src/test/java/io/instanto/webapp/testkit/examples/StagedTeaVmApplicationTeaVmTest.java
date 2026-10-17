@@ -20,10 +20,9 @@ import org.teavm.junit.TeaVMTestRunner;
  * The same component, tested as a deployed TeaVM application rather than in the test's own page.
  *
  * <p>{@link TimesheetComponentTeaVmTest} constructs {@link TimesheetComponent} directly and can
- * substitute its service. This cannot: the application has been compiled to JavaScript, staged
- * onto the test classpath and opened through its own entry point, so what it covers is startup,
- * asset paths and the behaviour a user would see. Both are worth having, and they cost the same
- * to write.
+ * substitute its service. This cannot: the application has been compiled to JavaScript, staged onto
+ * the test classpath and opened through its own entry point, so what it covers is startup, asset
+ * paths and the behaviour a user would see. Both are worth having, and they cost the same to write.
  */
 @RunWith(TeaVMTestRunner.class)
 @SkipJVM
@@ -36,8 +35,8 @@ public class StagedTeaVmApplicationTeaVmTest {
   public void startsFromItsOwnEntryPointAndRendersItsData() {
     expect(Dom.findByRole("heading", "July timesheet")).toBeVisible();
     expect(Dom.findByText("Monday: 7h")).toBeVisible();
-    assertTrue("the application's own script produced the list",
-        Dom.page().findAll("li").size() >= 3);
+    assertTrue(
+        "the application's own script produced the list", Dom.page().findAll("li").size() >= 3);
   }
 
   @Test

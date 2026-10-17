@@ -7,9 +7,7 @@ package io.instanto.webapp.testkit.dom;
 
 import org.junit.After;
 
-/**
- * Compatibility base class for a runner that cannot execute {@link DomRule}.
- */
+/** Compatibility base class for a runner that cannot execute {@link DomRule}. */
 public abstract class DomTest {
 
   @After

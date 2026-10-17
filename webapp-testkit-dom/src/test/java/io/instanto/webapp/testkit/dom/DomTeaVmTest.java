@@ -7,10 +7,10 @@ package io.instanto.webapp.testkit.dom;
 
 import static io.instanto.webapp.testkit.dom.Dom.find;
 import static io.instanto.webapp.testkit.dom.Dom.findAll;
-import static io.instanto.webapp.testkit.dom.Dom.findByText;
 import static io.instanto.webapp.testkit.dom.Dom.findByLabelText;
 import static io.instanto.webapp.testkit.dom.Dom.findByRole;
 import static io.instanto.webapp.testkit.dom.Dom.findByTestId;
+import static io.instanto.webapp.testkit.dom.Dom.findByText;
 import static io.instanto.webapp.testkit.dom.Dom.render;
 import static io.instanto.webapp.testkit.dom.Expect.expect;
 import static org.junit.Assert.assertEquals;
@@ -29,8 +29,7 @@ import org.teavm.junit.TeaVMTestRunner;
 @SkipJVM
 public class DomTeaVmTest {
 
-  @Rule
-  public DomRule dom = new DomRule();
+  @Rule public DomRule dom = new DomRule();
 
   @Test
   public void findsAnElementBySelector() {
@@ -127,7 +126,8 @@ public class DomTeaVmTest {
     expect(find("#name"))
         .toHaveValue("A-17")
         .toHaveClass("wide")
-        .not().toHaveClass("narrow")
+        .not()
+        .toHaveClass("narrow")
         .toHaveAttribute("id", "name")
         .toBeDisabled();
   }

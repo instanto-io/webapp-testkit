@@ -43,15 +43,16 @@ public class FramedLayoutTeaVmTest {
   @Test
   public void comparingAcrossDocumentsIsACoordinateSystemError() {
     HTMLElement insideApplication = Dom.findByRole("button", "Toggle");
-    HTMLElement inTheTestPage =
-        Dom.container().getOwnerDocument().createElement("div");
+    HTMLElement inTheTestPage = Dom.container().getOwnerDocument().createElement("div");
     Dom.container().appendChild(inTheTestPage);
 
-    IllegalArgumentException failure = assertThrows(IllegalArgumentException.class,
-        () -> expect(inTheTestPage).toBeLeftOf(insideApplication));
+    IllegalArgumentException failure =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> expect(inTheTestPage).toBeLeftOf(insideApplication));
 
     assertTrue(failure.getMessage(), failure.getMessage().contains("across documents"));
-    assertTrue("names both documents: " + failure.getMessage(),
-        failure.getMessage().contains("plain-js"));
+    assertTrue(
+        "names both documents: " + failure.getMessage(), failure.getMessage().contains("plain-js"));
   }
 }

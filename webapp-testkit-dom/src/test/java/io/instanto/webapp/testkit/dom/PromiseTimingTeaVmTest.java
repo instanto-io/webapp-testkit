@@ -24,11 +24,12 @@ public class PromiseTimingTeaVmTest {
   public void aResolvedPromiseDoesNotCallBackWithinTheTest() {
     List<String> seen = new ArrayList<>();
 
-    JSPromise.resolve("value").then(
-        value -> {
-          seen.add("resolved");
-          return value;
-        });
+    JSPromise.resolve("value")
+        .then(
+            value -> {
+              seen.add("resolved");
+              return value;
+            });
 
     // Spinning does not yield, so the microtask queue cannot drain here.
     for (int spin = 0; spin < 100_000; spin++) {

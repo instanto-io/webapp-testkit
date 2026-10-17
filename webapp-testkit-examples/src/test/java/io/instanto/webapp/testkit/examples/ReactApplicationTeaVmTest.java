@@ -18,7 +18,8 @@ import org.teavm.junit.SkipJVM;
 import org.teavm.junit.TeaVMTestRunner;
 
 /**
- * A React application, its components written in Java and compiled by TeaVM, tested as built output.
+ * A React application, its components written in Java and compiled by TeaVM, tested as built
+ * output.
  *
  * <p>The counterpart to {@link WebFxApplicationTeaVmTest}. A transpiled JavaFX scene exposes no
  * roles or accessible names, so only geometry can be asserted on it. React renders ordinary HTML,
@@ -33,17 +34,19 @@ import org.teavm.junit.TeaVMTestRunner;
 public class ReactApplicationTeaVmTest {
 
   @Rule
-  public ApplicationRule app = new ApplicationRule("/resources/applications/react/index.html")
-      // React replaces the "Loading..." placeholder once it has mounted.
-      .readyWhen(page -> !page.findAllByRole("heading").isEmpty())
-      .readyWithin(20_000);
+  public ApplicationRule app =
+      new ApplicationRule("/resources/applications/react/index.html")
+          // React replaces the "Loading..." placeholder once it has mounted.
+          .readyWhen(page -> !page.findAllByRole("heading").isEmpty())
+          .readyWithin(20_000);
 
   @Test
   public void findsControlsByTheirAccessibleNames() {
     expect(Dom.findByRole("heading", "teavm-react Kitchen Sink")).toBeVisible();
     expect(Dom.findByRole("button", "Switch to Dark")).toBeVisible();
     expect(Dom.findByRole("heading", "Todo List")).toBeVisible();
-    assertFalse("the application renders real form controls",
+    assertFalse(
+        "the application renders real form controls",
         Dom.page().findAllByRole("textbox").isEmpty());
   }
 

@@ -33,8 +33,7 @@ import org.teavm.junit.TeaVMTestRunner;
 @SkipJVM
 public class EventsTeaVmTest {
 
-  @Rule
-  public DomRule dom = new DomRule();
+  @Rule public DomRule dom = new DomRule();
 
   private final List<String> seen = new ArrayList<>();
 

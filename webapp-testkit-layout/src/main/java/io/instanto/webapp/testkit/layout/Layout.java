@@ -122,33 +122,59 @@ public final class Layout {
   /** Evaluates any relation, validating both boxes and the tolerance. */
   public static boolean holds(LayoutRelation relation, LayoutBox a, LayoutBox b, double tolerance) {
     Objects.requireNonNull(relation, "relation");
-    return relation.holds(checked(a, "subject"), checked(b, "reference"), checkedTolerance(tolerance));
+    return relation.holds(
+        checked(a, "subject"), checked(b, "reference"), checkedTolerance(tolerance));
   }
 
   /** {@code [left=12.0 top=40.0 right=92.0 bottom=74.0]} */
   public static String describe(LayoutBox box) {
     checked(box, "box");
-    return "[left=" + number(box.left()) + " top=" + number(box.top())
-        + " right=" + number(box.right()) + " bottom=" + number(box.bottom()) + "]";
+    return "[left="
+        + number(box.left())
+        + " top="
+        + number(box.top())
+        + " right="
+        + number(box.right())
+        + " bottom="
+        + number(box.bottom())
+        + "]";
   }
 
   /** States the relation, both complete rectangles, the tolerance and the measurement. */
-  public static String explain(LayoutRelation relation, LayoutBox a, LayoutBox b, double tolerance) {
+  public static String explain(
+      LayoutRelation relation, LayoutBox a, LayoutBox b, double tolerance) {
     Objects.requireNonNull(relation, "relation");
     checked(a, "subject");
     checked(b, "reference");
     checkedTolerance(tolerance);
-    return "expected " + describe(a) + " " + relation.description() + " " + describe(b)
-        + " within " + number(tolerance)
-        + "; " + relation.measurement() + " was " + number(relation.measure(a, b));
+    return "expected "
+        + describe(a)
+        + " "
+        + relation.description()
+        + " "
+        + describe(b)
+        + " within "
+        + number(tolerance)
+        + "; "
+        + relation.measurement()
+        + " was "
+        + number(relation.measure(a, b));
   }
 
-  public static String explainExtent(String extent, LayoutBox box, double expected, double actual,
-      double tolerance) {
+  public static String explainExtent(
+      String extent, LayoutBox box, double expected, double actual, double tolerance) {
     checked(box, "box");
     checkedTolerance(tolerance);
-    return "expected " + describe(box) + " to have " + extent + " " + number(expected)
-        + " within " + number(tolerance) + "; measured " + number(actual);
+    return "expected "
+        + describe(box)
+        + " to have "
+        + extent
+        + " "
+        + number(expected)
+        + " within "
+        + number(tolerance)
+        + "; measured "
+        + number(actual);
   }
 
   private static LayoutBox checked(LayoutBox box, String role) {
@@ -168,8 +194,15 @@ public final class Layout {
   }
 
   private static String describeRaw(LayoutBox box) {
-    return "[left=" + number(box.left()) + " top=" + number(box.top())
-        + " width=" + number(box.width()) + " height=" + number(box.height()) + "]";
+    return "[left="
+        + number(box.left())
+        + " top="
+        + number(box.top())
+        + " width="
+        + number(box.width())
+        + " height="
+        + number(box.height())
+        + "]";
   }
 
   /** Keeps fractional coordinates without printing floating-point noise. */

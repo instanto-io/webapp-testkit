@@ -23,14 +23,16 @@ public class KeyboardEventsTeaVmTest {
   private final List<LegacyKeyboardEvent> events = new ArrayList<>();
 
   interface LegacyKeyboardEvent extends KeyboardEvent {
-    @JSProperty int getWhich();
+    @JSProperty
+    int getWhich();
   }
 
   private void listen() {
     render("<div id='parent'><input id='key'></div>");
     for (String type : List.of("keydown", "keypress", "keyup")) {
-      find("#parent").addEventListener(type,
-          (EventListener<Event>) event -> events.add((LegacyKeyboardEvent) event));
+      find("#parent")
+          .addEventListener(
+              type, (EventListener<Event>) event -> events.add((LegacyKeyboardEvent) event));
     }
   }
 
@@ -51,7 +53,8 @@ public class KeyboardEventsTeaVmTest {
     }
   }
 
-  @Test public void arrowKeysReachModernAndLegacyListeners() {
+  @Test
+  public void arrowKeysReachModernAndLegacyListeners() {
     listen();
     assertPress("ArrowLeft", "ArrowLeft", "ArrowLeft", 37);
     assertPress("ArrowUp", "ArrowUp", "ArrowUp", 38);
@@ -59,7 +62,8 @@ public class KeyboardEventsTeaVmTest {
     assertPress("ArrowDown", "ArrowDown", "ArrowDown", 40);
   }
 
-  @Test public void escapeEnterSpaceAndTabHaveLegacyCodes() {
+  @Test
+  public void escapeEnterSpaceAndTabHaveLegacyCodes() {
     listen();
     assertPress("Escape", "Escape", "Escape", 27);
     assertPress("Enter", "Enter", "Enter", 13);
@@ -67,7 +71,8 @@ public class KeyboardEventsTeaVmTest {
     assertPress("Tab", "Tab", "Tab", 9);
   }
 
-  @Test public void navigationAndEditingKeysHaveLegacyCodes() {
+  @Test
+  public void navigationAndEditingKeysHaveLegacyCodes() {
     listen();
     assertPress("Backspace", "Backspace", "Backspace", 8);
     assertPress("Delete", "Delete", "Delete", 46);
@@ -78,7 +83,8 @@ public class KeyboardEventsTeaVmTest {
     assertPress("PageDown", "PageDown", "PageDown", 34);
   }
 
-  @Test public void aliasesAreNormalized() {
+  @Test
+  public void aliasesAreNormalized() {
     listen();
     assertPress("Esc", "Escape", "Escape", 27);
     assertPress("Left", "ArrowLeft", "ArrowLeft", 37);
@@ -86,7 +92,8 @@ public class KeyboardEventsTeaVmTest {
     assertPress("Del", "Delete", "Delete", 46);
   }
 
-  @Test public void asciiAndFunctionKeysUseConsistentCodes() {
+  @Test
+  public void asciiAndFunctionKeysUseConsistentCodes() {
     listen();
     assertPress("a", "a", "KeyA", 65);
     assertPress("A", "A", "KeyA", 65);
@@ -99,13 +106,15 @@ public class KeyboardEventsTeaVmTest {
     assertPress("F24", "F24", "F24", 135);
   }
 
-  @Test public void unknownPhysicalKeysAreNotInvented() {
+  @Test
+  public void unknownPhysicalKeysAreNotInvented() {
     listen();
     assertPress("Unidentified", "Unidentified", "", 0);
     assertPress("\uD83D\uDE00", "\uD83D\uDE00", "", 0);
   }
 
-  @Test public void typingUsesCharacterCodesOnlyForKeypress() {
+  @Test
+  public void typingUsesCharacterCodesOnlyForKeypress() {
     listen();
     type(find("#key"), "a");
     assertEquals(3, events.size());
@@ -120,11 +129,16 @@ public class KeyboardEventsTeaVmTest {
     }
   }
 
-  @Test public void legacyKeydownHandlerCanCancelTypingAndStillSeeKeyup() {
+  @Test
+  public void legacyKeydownHandlerCanCancelTypingAndStillSeeKeyup() {
     listen();
-    find("#key").addEventListener("keydown", (EventListener<KeyboardEvent>) event -> {
-      if (event.getKeyCode() == 65) event.preventDefault();
-    });
+    find("#key")
+        .addEventListener(
+            "keydown",
+            (EventListener<KeyboardEvent>)
+                event -> {
+                  if (event.getKeyCode() == 65) event.preventDefault();
+                });
     type(find("#key"), "a");
     assertEquals(2, events.size());
     assertEquals("keyup", events.get(1).getType());
@@ -132,7 +146,8 @@ public class KeyboardEventsTeaVmTest {
     Expect.expect(find("#key")).toHaveValue("");
   }
 
-  @Test public void cancelledKeypressPreventsEditingAndStillReleasesKey() {
+  @Test
+  public void cancelledKeypressPreventsEditingAndStillReleasesKey() {
     listen();
     find("#key").addEventListener("keypress", (EventListener<Event>) Event::preventDefault);
     type(find("#key"), "a");

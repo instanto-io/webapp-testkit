@@ -13,10 +13,10 @@ import org.teavm.jso.JSObject;
 /**
  * A clock a test advances by hand.
  *
- * <p>While installed, work scheduled through {@code setTimeout}, {@code setInterval}, or
- * {@code requestAnimationFrame} waits until {@link #tick} reaches it. {@code Date} and
- * {@code System.currentTimeMillis} report its absolute time; {@code performance.now} and animation
- * frame timestamps report elapsed time.
+ * <p>While installed, work scheduled through {@code setTimeout}, {@code setInterval}, or {@code
+ * requestAnimationFrame} waits until {@link #tick} reaches it. {@code Date} and {@code
+ * System.currentTimeMillis} report its absolute time; {@code performance.now} and animation frame
+ * timestamps report elapsed time.
  *
  * <pre>{@code
  * clock().install();
@@ -59,8 +59,8 @@ public final class Clock {
    *
    * <p>Each window has its own timers, so a clock installed in the test page does not affect an
    * application running in a frame, and the reverse. Timers the application scheduled before the
-   * clock was installed keep running on the real ones; work scheduled afterwards waits for
-   * {@link #tick}.
+   * clock was installed keep running on the real ones; work scheduled afterwards waits for {@link
+   * #tick}.
    */
   public static Clock forWindow(JSObject window) {
     return new Clock(window);
@@ -130,7 +130,9 @@ public final class Clock {
     for (int callbacks = 0; ; callbacks++) {
       if (callbacks > MAXIMUM_CALLBACKS_PER_TICK) {
         throw new IllegalStateException(
-            "Stopped after " + MAXIMUM_CALLBACKS_PER_TICK + " callbacks in one tick, because"
+            "Stopped after "
+                + MAXIMUM_CALLBACKS_PER_TICK
+                + " callbacks in one tick, because"
                 + " something is rescheduling itself faster than the clock advances");
       }
       ScheduledCall next = nextDueBy(target);
@@ -186,8 +188,7 @@ public final class Clock {
     private final int sequence = sequenceGenerator++;
     private long due;
 
-    private ScheduledCall(
-        int handle, JSObject callback, long due, int delay, boolean repeating) {
+    private ScheduledCall(int handle, JSObject callback, long due, int delay, boolean repeating) {
       this.handle = handle;
       this.callback = callback;
       this.due = due;

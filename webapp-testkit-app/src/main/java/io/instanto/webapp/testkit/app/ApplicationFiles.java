@@ -14,7 +14,8 @@ public final class ApplicationFiles {
   private static final Pattern HEAD = Pattern.compile("(?is)<head(?:\\s[^>]*)?>");
   private static final String MARKER = "data-webapp-testkit-diagnostics";
   private static final String STAGED = ".webapp-testkit-staged-app";
-  private static final String DIAGNOSTICS = """
+  private static final String DIAGNOSTICS =
+      """
       <script data-webapp-testkit-diagnostics>
       (function () {
         if (window.__webappTestkitDiagnostics) return;
@@ -46,8 +47,10 @@ public final class ApplicationFiles {
     Path parent = target.getParent();
     Files.createDirectories(parent);
     target = parent.toRealPath().resolve(target.getFileName());
-    if (target.startsWith(root)) throw new IOException("Destination must be outside the source application");
-    if (root.startsWith(target)) throw new IOException("Destination must not contain the source application");
+    if (target.startsWith(root))
+      throw new IOException("Destination must be outside the source application");
+    if (root.startsWith(target))
+      throw new IOException("Destination must not contain the source application");
     if (Files.exists(target)) {
       if (Files.isSymbolicLink(target) || !Files.isRegularFile(target.resolve(STAGED))) {
         throw new IOException("Application destination already exists: " + target);
@@ -56,12 +59,16 @@ public final class ApplicationFiles {
     }
     try (var paths = Files.walk(root)) {
       for (Path file : paths.sorted().toList()) {
-        if (Files.isSymbolicLink(file)) throw new IOException("Application contains a symbolic link: " + file);
+        if (Files.isSymbolicLink(file))
+          throw new IOException("Application contains a symbolic link: " + file);
         Path output = target.resolve(root.relativize(file));
         if (Files.isDirectory(file)) {
           Files.createDirectories(output);
         } else if (file.toString().endsWith(".html") || file.toString().endsWith(".htm")) {
-          Files.writeString(output, instrument(Files.readString(file, StandardCharsets.UTF_8)), StandardCharsets.UTF_8);
+          Files.writeString(
+              output,
+              instrument(Files.readString(file, StandardCharsets.UTF_8)),
+              StandardCharsets.UTF_8);
         } else {
           Files.copy(file, output, StandardCopyOption.COPY_ATTRIBUTES);
         }
@@ -93,7 +100,9 @@ public final class ApplicationFiles {
 
   /** Build-tool entry point: source directory followed by a new test-classpath directory. */
   public static void main(String[] args) throws IOException {
-    if (args.length != 2) throw new IllegalArgumentException("Usage: ApplicationFiles <built-app> <test-classpath-app>");
+    if (args.length != 2)
+      throw new IllegalArgumentException(
+          "Usage: ApplicationFiles <built-app> <test-classpath-app>");
     stage(Path.of(args[0]), Path.of(args[1]));
   }
 }

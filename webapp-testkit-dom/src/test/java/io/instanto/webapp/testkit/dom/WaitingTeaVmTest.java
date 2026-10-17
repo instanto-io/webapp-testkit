@@ -6,11 +6,11 @@
 package io.instanto.webapp.testkit.dom;
 
 import static io.instanto.webapp.testkit.dom.Dom.awaitByRole;
+import static io.instanto.webapp.testkit.dom.Dom.clock;
 import static io.instanto.webapp.testkit.dom.Dom.findByText;
 import static io.instanto.webapp.testkit.dom.Dom.render;
 import static io.instanto.webapp.testkit.dom.Dom.waitFor;
 import static io.instanto.webapp.testkit.dom.Expect.expect;
-import static io.instanto.webapp.testkit.dom.Dom.clock;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -49,8 +49,8 @@ public class WaitingTeaVmTest {
   public void timeoutRetainsTheLastQueryDiagnostics() {
     render("<p>Still loading</p>");
 
-    AssertionError failure = assertThrows(AssertionError.class,
-        () -> waitFor(() -> Dom.findByRole("heading"), 20));
+    AssertionError failure =
+        assertThrows(AssertionError.class, () -> waitFor(() -> Dom.findByRole("heading"), 20));
 
     assertTrue(failure.getMessage(), failure.getMessage().contains("Still loading"));
   }
@@ -61,10 +61,13 @@ public class WaitingTeaVmTest {
     clock().install();
     try {
       Window.setTimeout(
-          () -> JSPromise.resolve("Ready").then(value -> {
-            Dom.find("p").setInnerText(value);
-            return value;
-          }),
+          () ->
+              JSPromise.resolve("Ready")
+                  .then(
+                      value -> {
+                        Dom.find("p").setInnerText(value);
+                        return value;
+                      }),
           100);
 
       clock().tick(100);

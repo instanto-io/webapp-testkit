@@ -26,21 +26,22 @@ import org.teavm.junit.TeaVMTestRunner;
  * repository does not run, which is the case the testkit exists for.
  *
  * <p>It also shows the limit of the accessible queries. WebFX renders its scene graph into custom
- * elements — {@code fx-scene}, {@code fx-circle} — with no roles and no accessible names, so
- * {@code findByRole} and {@code findByLabelText} have nothing to match. What a graphical
- * application does expose is geometry, which is what these assertions use.
+ * elements — {@code fx-scene}, {@code fx-circle} — with no roles and no accessible names, so {@code
+ * findByRole} and {@code findByLabelText} have nothing to match. What a graphical application does
+ * expose is geometry, which is what these assertions use.
  */
 @RunWith(TeaVMTestRunner.class)
 @SkipJVM
 public class WebFxApplicationTeaVmTest {
 
   @Rule
-  public ApplicationRule app = new ApplicationRule("/resources/applications/webfx/index.html")
-      // WebFX never sets data-ready, and its shapes are in the DOM before JavaFX has laid them
-      // out, so readiness is the first shape acquiring a box rather than merely existing.
-      .readyWhen(page -> laidOutShape(page) != null)
-      .readyWithin(20_000)
-      .sized(800, 600);
+  public ApplicationRule app =
+      new ApplicationRule("/resources/applications/webfx/index.html")
+          // WebFX never sets data-ready, and its shapes are in the DOM before JavaFX has laid them
+          // out, so readiness is the first shape acquiring a box rather than merely existing.
+          .readyWhen(page -> laidOutShape(page) != null)
+          .readyWithin(20_000)
+          .sized(800, 600);
 
   @Test
   public void bootstrapsFromItsOwnStagedAssets() {
@@ -69,11 +70,15 @@ public class WebFxApplicationTeaVmTest {
     HTMLElement circle = laidOutShape(Dom.page());
     ElementBox before = Dom.layout(circle);
 
-    Dom.waitFor(() -> {
-      ElementBox now = Dom.layout(circle);
-      assertTrue("expected the animation to move " + before + " but it is still " + now,
-          Math.abs(now.left() - before.left()) > 0.5 || Math.abs(now.top() - before.top()) > 0.5);
-    }, 5_000);
+    Dom.waitFor(
+        () -> {
+          ElementBox now = Dom.layout(circle);
+          assertTrue(
+              "expected the animation to move " + before + " but it is still " + now,
+              Math.abs(now.left() - before.left()) > 0.5
+                  || Math.abs(now.top() - before.top()) > 0.5);
+        },
+        5_000);
   }
 
   /** The first shape JavaFX has actually laid out, or null while the scene is still building. */
@@ -90,7 +95,8 @@ public class WebFxApplicationTeaVmTest {
   public void exposesNoAccessibleSemanticsToQueryOn() {
     // A tripwire, not an endorsement. If WebFX ever emits roles this fails and the demo can
     // use findByRole like any other application.
-    assertTrue("WebFX now exposes roles - the accessible queries apply to it",
+    assertTrue(
+        "WebFX now exposes roles - the accessible queries apply to it",
         Dom.page().findAllByRole("button").isEmpty());
   }
 }

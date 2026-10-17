@@ -59,8 +59,13 @@ Chrome or Firefox must be installed and available to the build.
 
 JUnit rules under TeaVM need
 [`io.instanto:instanto-teavm-extensions`](https://github.com/instanto-io/instanto-teavm)
-ahead of `teavm-junit` on the test classpath. That library is separate and depends on
-nothing of its own.
+ahead of `teavm-junit` on the test classpath. It includes JUnit 4 and has no Sarto
+runtime dependency.
+
+TeaVM 0.16.0 has reproducible optimization and minification failures described in
+the [compiler-mode analysis](docs/getting-started.md#compiler-modes-and-current-failures).
+The checked CI suite uses `SIMPLE` JS/Wasm plus minified JS; cross-window casts
+and the fake-clock minifier workaround are covered by regression tests.
 
 ## Comparison with Playwright
 

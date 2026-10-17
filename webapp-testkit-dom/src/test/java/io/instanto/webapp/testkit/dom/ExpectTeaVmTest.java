@@ -26,8 +26,7 @@ import org.teavm.junit.TeaVMTestRunner;
 @SkipJVM
 public class ExpectTeaVmTest {
 
-  @Rule
-  public DomRule dom = new DomRule();
+  @Rule public DomRule dom = new DomRule();
 
   @Test
   public void invertsTheExpectationThatFollows() {
@@ -141,10 +140,11 @@ public class ExpectTeaVmTest {
 
   @Test
   public void checksAccessibilityValidityAndDisclosureState() {
-    render("<label for='account'>Account</label>"
-        + "<input id='account' required aria-invalid='true'>"
-        + "<button id='filters' aria-expanded='false'>Filters</button>"
-        + "<div id='choice' role='option' aria-selected='true'>July</div>");
+    render(
+        "<label for='account'>Account</label>"
+            + "<input id='account' required aria-invalid='true'>"
+            + "<button id='filters' aria-expanded='false'>Filters</button>"
+            + "<div id='choice' role='option' aria-selected='true'>July</div>");
 
     expect(find("#account"))
         .toHaveAccessibleName("Account")
@@ -157,21 +157,28 @@ public class ExpectTeaVmTest {
 
   @Test
   public void checksNamedFormValuesTogether() {
-    render("<form id='profile'>"
-        + "<input name='account' value='A-17'>"
-        + "<input name='active' type='checkbox' checked>"
-        + "<input name='team' type='checkbox' value='ops' checked>"
-        + "<input name='team' type='checkbox' value='analytics' checked>"
-        + "<select name='days' multiple>"
-        + "<option value='mon' selected>Monday</option>"
-        + "<option value='tue'>Tuesday</option>"
-        + "<option value='wed' selected>Wednesday</option></select>"
-        + "</form>");
+    render(
+        "<form id='profile'>"
+            + "<input name='account' value='A-17'>"
+            + "<input name='active' type='checkbox' checked>"
+            + "<input name='team' type='checkbox' value='ops' checked>"
+            + "<input name='team' type='checkbox' value='analytics' checked>"
+            + "<select name='days' multiple>"
+            + "<option value='mon' selected>Monday</option>"
+            + "<option value='tue'>Tuesday</option>"
+            + "<option value='wed' selected>Wednesday</option></select>"
+            + "</form>");
 
-    expect(find("#profile")).toHaveFormValues(Map.of(
-        "account", "A-17",
-        "active", true,
-        "team", List.of("ops", "analytics"),
-        "days", List.of("mon", "wed")));
+    expect(find("#profile"))
+        .toHaveFormValues(
+            Map.of(
+                "account",
+                "A-17",
+                "active",
+                true,
+                "team",
+                List.of("ops", "analytics"),
+                "days",
+                List.of("mon", "wed")));
   }
 }

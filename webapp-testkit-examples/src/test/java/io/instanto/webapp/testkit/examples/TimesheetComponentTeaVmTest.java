@@ -24,9 +24,9 @@ import org.teavm.junit.TeaVMTestRunner;
  * browser it will run in.
  *
  * <p>The test and the component compile together, so the component is constructed through its own
- * constructor and handed the service it reads from. There is no application to serve, no URL and
- * no frame — the component is put on the page directly. Renaming a method on it breaks this test
- * at compile time rather than at run time.
+ * constructor and handed the service it reads from. There is no application to serve, no URL and no
+ * frame — the component is put on the page directly. Renaming a method on it breaks this test at
+ * compile time rather than at run time.
  */
 @RunWith(TeaVMTestRunner.class)
 @SkipJVM

@@ -82,8 +82,8 @@ public final class Dom {
   /**
    * Scopes the static queries to an existing element, such as an application's document body.
    *
-   * <p>The binding only redirects queries; the test container stays where it is, so anything
-   * hosted in it — such as the frame the application runs in — survives until {@link #reset()}.
+   * <p>The binding only redirects queries; the test container stays where it is, so anything hosted
+   * in it — such as the frame the application runs in — survives until {@link #reset()}.
    */
   public static void use(HTMLElement element) {
     scope = Objects.requireNonNull(element, "element");
@@ -508,7 +508,8 @@ public final class Dom {
     Objects.requireNonNull(element, "element");
     Objects.requireNonNull(values, "values");
     int result = Browser.selectOptions(element, values);
-    if (result == 0) throw new IllegalArgumentException("selectOptions() requires a <select> element");
+    if (result == 0)
+      throw new IllegalArgumentException("selectOptions() requires a <select> element");
     if (result == 1) {
       throw new AssertionError("Not every requested option exists." + markup());
     }
@@ -559,8 +560,10 @@ public final class Dom {
     Objects.requireNonNull(assertion, "assertion");
     requireTimeout(timeoutMilliseconds);
     Throwable[] terminal = new Throwable[1];
-    boolean succeeded = new JSPromise<Boolean>((resolve, reject) ->
-        attempt(assertion, timeoutMilliseconds, terminal, resolve)).await();
+    boolean succeeded =
+        new JSPromise<Boolean>(
+                (resolve, reject) -> attempt(assertion, timeoutMilliseconds, terminal, resolve))
+            .await();
     if (succeeded) return;
     if (terminal[0] instanceof RuntimeException runtime) throw runtime;
     if (terminal[0] instanceof Error error) throw error;

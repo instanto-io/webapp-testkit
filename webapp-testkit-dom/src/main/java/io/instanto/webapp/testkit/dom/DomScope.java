@@ -330,23 +330,26 @@ public final class DomScope {
 
   private List<HTMLElement> byDisplayValue(TextMatch text) {
     Objects.requireNonNull(text, "text");
-    return matching(element -> {
-      String value = Browser.value(element);
-      return value != null && text.matches(value);
-    });
+    return matching(
+        element -> {
+          String value = Browser.value(element);
+          return value != null && text.matches(value);
+        });
   }
 
   private List<HTMLElement> labelled(TextMatch text) {
     Objects.requireNonNull(text, "text");
-    return matching(element -> {
-      String label = Browser.labelText(element);
-      return label != null && text.matches(label);
-    });
+    return matching(
+        element -> {
+          String label = Browser.labelText(element);
+          return label != null && text.matches(label);
+        });
   }
 
   private List<HTMLElement> attribute(String name, TextMatch text) {
     Objects.requireNonNull(text, "text");
-    return matching(element -> element.hasAttribute(name) && text.matches(element.getAttribute(name)));
+    return matching(
+        element -> element.hasAttribute(name) && text.matches(element.getAttribute(name)));
   }
 
   private List<HTMLElement> byText(TextMatch text) {
@@ -389,8 +392,12 @@ public final class DomScope {
     if (matches.isEmpty()) {
       throw new AssertionError("No element matching " + description + "." + markup());
     }
-    StringBuilder message = new StringBuilder("Found ").append(matches.size())
-        .append(" elements matching ").append(description).append(':');
+    StringBuilder message =
+        new StringBuilder("Found ")
+            .append(matches.size())
+            .append(" elements matching ")
+            .append(description)
+            .append(':');
     for (HTMLElement match : matches) {
       message.append("\n").append(Browser.outerHtml(match));
     }

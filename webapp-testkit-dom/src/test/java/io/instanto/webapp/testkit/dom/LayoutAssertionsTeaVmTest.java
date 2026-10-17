@@ -18,8 +18,8 @@ import org.teavm.junit.TeaVMTestRunner;
 /**
  * The DOM half: computed style, measuring a rectangle, and the wiring to the relations.
  *
- * <p>The relation arithmetic itself is covered on the JVM in {@code webapp-testkit-layout}; what needs a
- * browser is that real layout reaches it intact.
+ * <p>The relation arithmetic itself is covered on the JVM in {@code webapp-testkit-layout}; what
+ * needs a browser is that real layout reaches it intact.
  */
 @RunWith(TeaVMTestRunner.class)
 @SkipJVM
@@ -29,8 +29,9 @@ public class LayoutAssertionsTeaVmTest {
 
   @Test
   public void computedStyleResolvesTheCascadeNotJustInlineStyle() {
-    Dom.render("<style>.boxed { display: flex; --gap-size: 7px }</style>"
-        + "<div class='boxed' id='outer'><span id='inner'>x</span></div>");
+    Dom.render(
+        "<style>.boxed { display: flex; --gap-size: 7px }</style>"
+            + "<div class='boxed' id='outer'><span id='inner'>x</span></div>");
 
     assertEquals("flex", Dom.computedStyle(Dom.find("#outer"), "display"));
     assertEquals("7px", Dom.computedStyle(Dom.find("#outer"), "--gap-size"));
@@ -40,8 +41,9 @@ public class LayoutAssertionsTeaVmTest {
 
   @Test
   public void computedStyleReadsPseudoElements() {
-    Dom.render("<style>#marked::before { content: 'tick'; display: block }</style>"
-        + "<div id='marked'>x</div>");
+    Dom.render(
+        "<style>#marked::before { content: 'tick'; display: block }</style>"
+            + "<div id='marked'>x</div>");
 
     assertEquals("\"tick\"", Dom.computedStyle(Dom.find("#marked"), "::before", "content"));
     assertEquals("block", Dom.computedStyle(Dom.find("#marked"), "::before", "display"));
@@ -49,8 +51,9 @@ public class LayoutAssertionsTeaVmTest {
 
   @Test
   public void aPositionedFixtureMeasuresWithoutTruncation() {
-    Dom.render("<div id='p' style='position:absolute; left:12.5px; top:40.25px;"
-        + " width:80.5px; height:34.75px'></div>");
+    Dom.render(
+        "<div id='p' style='position:absolute; left:12.5px; top:40.25px;"
+            + " width:80.5px; height:34.75px'></div>");
 
     ElementBox box = Dom.layout(Dom.find("#p"));
 
@@ -73,11 +76,12 @@ public class LayoutAssertionsTeaVmTest {
 
   @Test
   public void relationsRunAgainstRealLayout() {
-    Dom.render("<div style='position:relative; width:300px'>"
-        + "<div id='a' style='position:absolute; left:0; top:0; width:80px; height:34px'></div>"
-        + "<div id='b' style='position:absolute; left:80px; top:0; width:80px; height:34px'></div>"
-        + "<div id='c' style='position:absolute; left:0; top:34px; width:80px; height:34px'></div>"
-        + "</div>");
+    Dom.render(
+        "<div style='position:relative; width:300px'>"
+            + "<div id='a' style='position:absolute; left:0; top:0; width:80px; height:34px'></div>"
+            + "<div id='b' style='position:absolute; left:80px; top:0; width:80px; height:34px'></div>"
+            + "<div id='c' style='position:absolute; left:0; top:34px; width:80px; height:34px'></div>"
+            + "</div>");
     HTMLElement a = Dom.find("#a");
     HTMLElement b = Dom.find("#b");
     HTMLElement c = Dom.find("#c");
@@ -99,13 +103,15 @@ public class LayoutAssertionsTeaVmTest {
 
   @Test
   public void aFailureNamesBothRectanglesAndTheTolerance() {
-    Dom.render("<div style='position:relative'>"
-        + "<div id='x' style='position:absolute; left:0; top:0; width:80px; height:34px'></div>"
-        + "<div id='y' style='position:absolute; left:200px; top:0; width:80px; height:34px'></div>"
-        + "</div>");
+    Dom.render(
+        "<div style='position:relative'>"
+            + "<div id='x' style='position:absolute; left:0; top:0; width:80px; height:34px'></div>"
+            + "<div id='y' style='position:absolute; left:200px; top:0; width:80px; height:34px'></div>"
+            + "</div>");
 
-    AssertionError failure = assertThrows(AssertionError.class,
-        () -> expect(Dom.find("#x")).toTouchHorizontally(Dom.find("#y")));
+    AssertionError failure =
+        assertThrows(
+            AssertionError.class, () -> expect(Dom.find("#x")).toTouchHorizontally(Dom.find("#y")));
 
     String message = failure.getMessage();
     assertTrue(message, message.contains("to touch horizontally"));
@@ -115,14 +121,18 @@ public class LayoutAssertionsTeaVmTest {
 
   @Test
   public void anAsynchronouslyMovedElementIsAssertedThroughWaitFor() {
-    Dom.render("<div style='position:relative; height:200px'>"
-        + "<div id='anchor' style='position:absolute; left:0; top:0; width:50px; height:20px'></div>"
-        + "<div id='mover' style='position:absolute; left:0; top:0; width:50px; height:20px'></div>"
-        + "</div>");
+    Dom.render(
+        "<div style='position:relative; height:200px'>"
+            + "<div id='anchor' style='position:absolute; left:0; top:0; width:50px; height:20px'></div>"
+            + "<div id='mover' style='position:absolute; left:0; top:0; width:50px; height:20px'></div>"
+            + "</div>");
     HTMLElement mover = Dom.find("#mover");
     HTMLElement anchor = Dom.find("#anchor");
-    Browser.setPollingTimeout(() -> mover.setAttribute("style",
-        "position:absolute; left:0; top:120px; width:50px; height:20px"), 60);
+    Browser.setPollingTimeout(
+        () ->
+            mover.setAttribute(
+                "style", "position:absolute; left:0; top:120px; width:50px; height:20px"),
+        60);
 
     Dom.waitFor(() -> expect(mover).toBeBelow(anchor));
 

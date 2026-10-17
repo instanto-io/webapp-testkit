@@ -28,8 +28,7 @@ import org.teavm.junit.TeaVMTestRunner;
 @SkipJVM
 public class TextInputEventsTeaVmTest {
 
-  @Rule
-  public DomRule dom = new DomRule();
+  @Rule public DomRule dom = new DomRule();
 
   private final List<String> seen = new ArrayList<>();
 
@@ -106,7 +105,9 @@ public class TextInputEventsTeaVmTest {
   }
 
   static final class KeyReader {
-    @org.teavm.jso.JSBody(params = {"event"}, script = "return event.key;")
+    @org.teavm.jso.JSBody(
+        params = {"event"},
+        script = "return event.key;")
     static native String key(Event event);
   }
 }

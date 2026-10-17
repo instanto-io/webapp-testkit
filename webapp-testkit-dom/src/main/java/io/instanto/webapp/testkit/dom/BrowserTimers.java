@@ -34,6 +34,8 @@ final class BrowserTimers {
    * System.currentTimeMillis() to `new Date().getTime()`. The replacement shares Date's prototype
    * so `instanceof` and every instance method keep working.
    */
+  // Avoid nested formal parameter names: TeaVM 0.16's JSBody minifier can rename
+  // the captured now function to the same name as one of those parameters.
   @JSBody(
       params = {"g", "schedule", "cancel", "now", "elapsed"},
       script =
@@ -63,17 +65,20 @@ final class BrowserTimers {
               + "  return schedule(function() { fn(elapsed()); }, 16, false);"
               + "};"
               + "g.cancelAnimationFrame = function(handle) { cancel(handle | 0); };"
-              + "function FakeDate(a, b, c, d, e, f, h) {"
+              + "function FakeDate() {"
               + "  if (!(this instanceof FakeDate)) { return new realDate(now()).toString(); }"
               + "  switch (arguments.length) {"
               + "    case 0: return new realDate(now());"
-              + "    case 1: return new realDate(a);"
-              + "    case 2: return new realDate(a, b);"
-              + "    case 3: return new realDate(a, b, c);"
-              + "    case 4: return new realDate(a, b, c, d);"
-              + "    case 5: return new realDate(a, b, c, d, e);"
-              + "    case 6: return new realDate(a, b, c, d, e, f);"
-              + "    default: return new realDate(a, b, c, d, e, f, h);"
+              + "    case 1: return new realDate(arguments[0]);"
+              + "    case 2: return new realDate(arguments[0], arguments[1]);"
+              + "    case 3: return new realDate(arguments[0], arguments[1], arguments[2]);"
+              + "    case 4: return new realDate(arguments[0], arguments[1], arguments[2], arguments[3]);"
+              + "    case 5: return new realDate(arguments[0], arguments[1], arguments[2],"
+              + " arguments[3], arguments[4]);"
+              + "    case 6: return new realDate(arguments[0], arguments[1], arguments[2],"
+              + " arguments[3], arguments[4], arguments[5]);"
+              + "    default: return new realDate(arguments[0], arguments[1], arguments[2],"
+              + " arguments[3], arguments[4], arguments[5], arguments[6]);"
               + "  }"
               + "}"
               + "FakeDate.prototype = realDate.prototype;"
@@ -82,8 +87,12 @@ final class BrowserTimers {
               + "FakeDate.UTC = realDate.UTC;"
               + "g.Date = FakeDate;"
               + "if (g.performance) { g.performance.now = function() { return elapsed(); }; }")
-  static native void install(JSObject g, ScheduleFunction schedule, CancelFunction cancel,
-      NowFunction now, NowFunction elapsed);
+  static native void install(
+      JSObject g,
+      ScheduleFunction schedule,
+      CancelFunction cancel,
+      NowFunction now,
+      NowFunction elapsed);
 
   @JSBody(
       params = {"g"},
@@ -109,6 +118,8 @@ final class BrowserTimers {
       script = "return typeof globalThis !== 'undefined' ? globalThis : window;")
   static native JSObject testWindow();
 
-  @JSBody(params = {"callback"}, script = "callback();")
+  @JSBody(
+      params = {"callback"},
+      script = "callback();")
   static native void run(JSObject callback);
 }

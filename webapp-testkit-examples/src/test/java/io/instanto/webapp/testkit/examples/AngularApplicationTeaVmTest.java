@@ -34,10 +34,11 @@ import org.teavm.junit.TeaVMTestRunner;
 public class AngularApplicationTeaVmTest {
 
   @Rule
-  public ApplicationRule app = new ApplicationRule("/resources/applications/angular/index.html")
-      // Angular replaces <app-root> once it has bootstrapped; that is the readiness signal.
-      .readyWhen(page -> page.findByRoleOrNull("heading", "July timesheet") != null)
-      .readyWithin(20_000);
+  public ApplicationRule app =
+      new ApplicationRule("/resources/applications/angular/index.html")
+          // Angular replaces <app-root> once it has bootstrapped; that is the readiness signal.
+          .readyWhen(page -> page.findByRoleOrNull("heading", "July timesheet") != null)
+          .readyWithin(20_000);
 
   @Test
   public void resolvesItsAssetsUnderTheStagedPrefix() {

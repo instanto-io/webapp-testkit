@@ -18,8 +18,8 @@ import org.teavm.junit.TeaVMTestRunner;
 /**
  * Tests written against an application this build did not compile.
  *
- * <p>The application in {@code src/main/resources/webapp} stands in for any built web application
- * — a GWT permutation, a bundler's output, a hand-written page. The build stages it with {@code
+ * <p>The application in {@code src/main/resources/webapp} stands in for any built web application —
+ * a GWT permutation, a bundler's output, a hand-written page. The build stages it with {@code
  * ApplicationFiles}; the rule serves it and points the queries at it. Nothing below mentions a
  * frame, a document or a window: these are the same {@link Dom} calls a unit test would make.
  */

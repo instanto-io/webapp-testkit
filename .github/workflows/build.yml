@@ -25,7 +25,15 @@ jobs:
     with:
       name: Verify in ${{ matrix.browser_name }}
       goals: clean test
-      maven-args: -Dwebapp.testkit.test.browser=${{ matrix.runner }}
+      # TeaVM 0.16.0 miscompiles top-level timers, catch-path class initialization
+      # and Wasm Promise.await at FULL.
+      # Keep the standalone reproducers and enable FULL explicitly when checking an upgrade.
+      maven-args: >-
+        -Pteavm-browser-tests -Dspotless.skip=true
+        -Dwebapp.testkit.test.browser=${{ matrix.runner }}
+        -Dteavm.junit.wasm-gc.runner=${{ matrix.runner }}
+        -Dteavm.junit.optimized=false -Dteavm.junit.minified=true
+        -Dinstanto.teavm.threadLocalChecks=true
     secrets: inherit
 
   publish-snapshot:
@@ -35,5 +43,5 @@ jobs:
     with:
       name: Publish Maven snapshot
       goals: deploy
-      maven-args: -DskipTests
+      maven-args: -DskipTests -Dspotless.skip=true
     secrets: inherit

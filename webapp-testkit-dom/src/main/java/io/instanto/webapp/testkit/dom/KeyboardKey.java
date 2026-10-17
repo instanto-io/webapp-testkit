@@ -31,8 +31,19 @@ record KeyboardKey(String key, String code, int legacyCode) {
       if (c >= '0' && c <= '9') return new KeyboardKey(key, "Digit" + c, c);
       String plain = "-=[]\\;',./`";
       String shifted = "_+{}|:\"<>?~";
-      String[] codes = {"Minus", "Equal", "BracketLeft", "BracketRight", "Backslash",
-          "Semicolon", "Quote", "Comma", "Period", "Slash", "Backquote"};
+      String[] codes = {
+        "Minus",
+        "Equal",
+        "BracketLeft",
+        "BracketRight",
+        "Backslash",
+        "Semicolon",
+        "Quote",
+        "Comma",
+        "Period",
+        "Slash",
+        "Backquote"
+      };
       int[] numbers = {189, 187, 219, 221, 220, 186, 222, 188, 190, 191, 192};
       int index = plain.indexOf(c);
       if (index < 0) index = shifted.indexOf(c);
@@ -48,8 +59,11 @@ record KeyboardKey(String key, String code, int legacyCode) {
     if (key.equals("Unidentified") || key.codePointCount(0, key.length()) == 1) {
       return new KeyboardKey(key, "", 0);
     }
-    throw new IllegalArgumentException("Unknown key \"" + key + "\". Use a constant from Keys, "
-        + "a single character, or a function key such as \"F5\". A name that is not recognised "
-        + "would be sent with no code and a zero key code, which some handlers ignore.");
+    throw new IllegalArgumentException(
+        "Unknown key \""
+            + key
+            + "\". Use a constant from Keys, "
+            + "a single character, or a function key such as \"F5\". A name that is not recognised "
+            + "would be sent with no code and a zero key code, which some handlers ignore.");
   }
 }

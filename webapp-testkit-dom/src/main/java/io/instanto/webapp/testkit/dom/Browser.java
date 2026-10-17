@@ -21,7 +21,9 @@ final class Browser {
     void run();
   }
 
-  /** Schedules test-library polling without consuming or depending on the application's fake clock. */
+  /**
+   * Schedules test-library polling without consuming or depending on the application's fake clock.
+   */
   @JSBody(
       params = {"callback", "delay"},
       script =
@@ -30,7 +32,9 @@ final class Browser {
               + "timer.call(g, callback, delay);")
   static native void setPollingTimeout(TimerCallback callback, int delay);
 
-  @JSBody(params = {"element"}, script = "return element.innerHTML;")
+  @JSBody(
+      params = {"element"},
+      script = "return element.innerHTML;")
   static native String innerHtml(HTMLElement element);
 
   @JSBody(
@@ -207,15 +211,20 @@ final class Browser {
               + "return null;")
   static native HTMLElement findByLabel(HTMLElement container, String text);
 
-  @JSBody(params = {"element", "html"}, script = "element.innerHTML = html;")
+  @JSBody(
+      params = {"element", "html"},
+      script = "element.innerHTML = html;")
   static native void setInnerHtml(HTMLElement element, String html);
 
-  @JSBody(params = {"element"}, script = "return element.outerHTML;")
+  @JSBody(
+      params = {"element"},
+      script = "return element.outerHTML;")
   static native String outerHtml(HTMLElement element);
 
   @JSBody(
       params = {"element", "type"},
-      script = "element.dispatchEvent(new element.ownerDocument.defaultView.Event(type, { bubbles: true, cancelable: true }));")
+      script =
+          "element.dispatchEvent(new element.ownerDocument.defaultView.Event(type, { bubbles: true, cancelable: true }));")
   static native void dispatch(HTMLElement element, String type);
 
   // Constructors do not consistently honour legacy fields; normalize this synthetic event only.
@@ -236,12 +245,15 @@ final class Browser {
     dispatchKey(element, type, data.key(), data.code(), data.legacyCode());
   }
 
-  @JSBody(params = {"element", "type", "key", "code", "keyCode"},
+  @JSBody(
+      params = {"element", "type", "key", "code", "keyCode"},
       script = KEYBOARD_EVENT_FACTORY + "element.dispatchEvent(keyboardEvent(type));")
   private static native void dispatchKey(
       HTMLElement element, String type, String key, String code, int keyCode);
 
-  @JSBody(params = {"element"}, script = "return element.className;")
+  @JSBody(
+      params = {"element"},
+      script = "return element.className;")
   static native String className(HTMLElement element);
 
   @JSBody(
@@ -249,7 +261,9 @@ final class Browser {
       script = "return typeof element.value === 'string' ? element.value : null;")
   static native String value(HTMLElement element);
 
-  @JSBody(params = {"element", "value"}, script = "element.value = value;")
+  @JSBody(
+      params = {"element", "value"},
+      script = "element.value = value;")
   static native void setValue(HTMLElement element, String value);
 
   /** Uses the browser's native setter so frameworks that track values observe the change. */
@@ -269,16 +283,17 @@ final class Browser {
 
   @JSBody(
       params = {"element", "key", "code", "keyCode"},
-      script = KEYBOARD_EVENT_FACTORY
-          + "element.focus();"
-          + "if (!element.dispatchEvent(keyboardEvent('keydown'))"
-          + " || !element.dispatchEvent(keyboardEvent('keypress'))) {"
-          + " element.dispatchEvent(keyboardEvent('keyup')); return false;"
-          + "}"
-          + "var before = new element.ownerDocument.defaultView.InputEvent('beforeinput',"
-          + " {data:key,inputType:'insertText',bubbles:true,cancelable:true});"
-          + "if (element.dispatchEvent(before)) return true;"
-          + "element.dispatchEvent(keyboardEvent('keyup')); return false;")
+      script =
+          KEYBOARD_EVENT_FACTORY
+              + "element.focus();"
+              + "if (!element.dispatchEvent(keyboardEvent('keydown'))"
+              + " || !element.dispatchEvent(keyboardEvent('keypress'))) {"
+              + " element.dispatchEvent(keyboardEvent('keyup')); return false;"
+              + "}"
+              + "var before = new element.ownerDocument.defaultView.InputEvent('beforeinput',"
+              + " {data:key,inputType:'insertText',bubbles:true,cancelable:true});"
+              + "if (element.dispatchEvent(before)) return true;"
+              + "element.dispatchEvent(keyboardEvent('keyup')); return false;")
   private static native boolean beginTypingCharacter(
       HTMLElement element, String key, String code, int keyCode);
 
@@ -289,14 +304,17 @@ final class Browser {
 
   @JSBody(
       params = {"element", "key", "code", "keyCode"},
-      script = KEYBOARD_EVENT_FACTORY
-          + "element.dispatchEvent(new element.ownerDocument.defaultView.InputEvent('input',"
-          + " {data:key,inputType:'insertText',bubbles:true}));"
-          + "element.dispatchEvent(keyboardEvent('keyup'));")
+      script =
+          KEYBOARD_EVENT_FACTORY
+              + "element.dispatchEvent(new element.ownerDocument.defaultView.InputEvent('input',"
+              + " {data:key,inputType:'insertText',bubbles:true}));"
+              + "element.dispatchEvent(keyboardEvent('keyup'));")
   private static native void finishTypingCharacter(
       HTMLElement element, String key, String code, int keyCode);
 
-  @JSBody(params = {"element", "checked"}, script = "element.checked = checked;")
+  @JSBody(
+      params = {"element", "checked"},
+      script = "element.checked = checked;")
   static native void setChecked(HTMLElement element, boolean checked);
 
   @JSBody(
@@ -313,10 +331,14 @@ final class Browser {
               + " {bubbles:type !== 'mouseenter' && type !== 'mouseleave',cancelable:true}));")
   static native void dispatchMouse(HTMLElement element, String type);
 
-  @JSBody(params = {"element"}, script = "element.focus();")
+  @JSBody(
+      params = {"element"},
+      script = "element.focus();")
   static native void focus(HTMLElement element);
 
-  @JSBody(params = {"element"}, script = "element.blur();")
+  @JSBody(
+      params = {"element"},
+      script = "element.blur();")
   static native void blur(HTMLElement element);
 
   /** Returns 0 for a non-select, 1 for a missing option, and 2 after selecting the value. */
@@ -368,16 +390,24 @@ final class Browser {
               + "items[next].focus(); return items[next];")
   static native HTMLElement tab(HTMLElement root, boolean backwards);
 
-  @JSBody(params = {"element"}, script = "return !!element.disabled;")
+  @JSBody(
+      params = {"element"},
+      script = "return !!element.disabled;")
   static native boolean isDisabled(HTMLElement element);
 
-  @JSBody(params = {"element"}, script = "return !!element.checked;")
+  @JSBody(
+      params = {"element"},
+      script = "return !!element.checked;")
   static native boolean isChecked(HTMLElement element);
 
-  @JSBody(params = {"element"}, script = "return element.isConnected;")
+  @JSBody(
+      params = {"element"},
+      script = "return element.isConnected;")
   static native boolean isInDocument(HTMLElement element);
 
-  @JSBody(params = {"element"}, script = "return element.ownerDocument.activeElement === element;")
+  @JSBody(
+      params = {"element"},
+      script = "return element.ownerDocument.activeElement === element;")
   static native boolean hasFocus(HTMLElement element);
 
   @JSBody(
@@ -387,7 +417,8 @@ final class Browser {
 
   @JSBody(
       params = {"element", "property"},
-      script = "return element.ownerDocument.defaultView.getComputedStyle(element).getPropertyValue(property).trim();")
+      script =
+          "return element.ownerDocument.defaultView.getComputedStyle(element).getPropertyValue(property).trim();")
   static native String style(HTMLElement element, String property);
 
   /** Whether the element takes up space and is not hidden by styling. */
@@ -441,42 +472,52 @@ final class Browser {
 
   /** A measured rectangle: a plain snapshot, not the live DOMRect. */
   interface Rect extends JSObject {
-    @JSProperty double getLeft();
+    @JSProperty
+    double getLeft();
 
-    @JSProperty double getTop();
+    @JSProperty
+    double getTop();
 
-    @JSProperty double getWidth();
+    @JSProperty
+    double getWidth();
 
-    @JSProperty double getHeight();
+    @JSProperty
+    double getHeight();
   }
 
   /** One call, so the four numbers cannot change between them. */
   @JSBody(
       params = {"element"},
-      script = "var r = element.getBoundingClientRect();"
-          + "return { left: r.left, top: r.top, width: r.width, height: r.height };")
+      script =
+          "var r = element.getBoundingClientRect();"
+              + "return { left: r.left, top: r.top, width: r.width, height: r.height };")
   static native Rect rect(HTMLElement element);
 
   @JSBody(
       params = {"element", "pseudoElement", "property"},
-      script = "return element.ownerDocument.defaultView"
-          + ".getComputedStyle(element, pseudoElement).getPropertyValue(property).trim();")
+      script =
+          "return element.ownerDocument.defaultView"
+              + ".getComputedStyle(element, pseudoElement).getPropertyValue(property).trim();")
   static native String style(HTMLElement element, String pseudoElement, String property);
 
-  @JSBody(params = {"a", "b"}, script = "return a.ownerDocument === b.ownerDocument;")
+  @JSBody(
+      params = {"a", "b"},
+      script = "return a.ownerDocument === b.ownerDocument;")
   static native boolean sameDocument(HTMLElement a, HTMLElement b);
 
   @JSBody(
       params = {"element"},
-      script = "var d = element.ownerDocument;"
-          + "return d && d.location ? d.location.href : '(detached document)';")
+      script =
+          "var d = element.ownerDocument;"
+              + "return d && d.location ? d.location.href : '(detached document)';")
   static native String documentLocation(HTMLElement element);
 
   /** Test support: records the three values a key press actually carried. */
   @JSBody(
       params = {"element", "output"},
-      script = "element.addEventListener('keydown', function (e) {"
-          + "  output.textContent = e.key + '|' + e.code + '|' + e.keyCode;"
-          + "});")
+      script =
+          "element.addEventListener('keydown', function (e) {"
+              + "  output.textContent = e.key + '|' + e.code + '|' + e.keyCode;"
+              + "});")
   static native void recordKeyDetail(HTMLElement element, HTMLElement output);
 }

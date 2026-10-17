@@ -54,8 +54,8 @@ public class KeysTeaVmTest {
         assertThrows(IllegalArgumentException.class, () -> Dom.press(field, "Return"));
 
     assertTrue(failure.getMessage(), failure.getMessage().contains("Unknown key \"Return\""));
-    assertTrue("points at the constants: " + failure.getMessage(),
-        failure.getMessage().contains("Keys"));
+    assertTrue(
+        "points at the constants: " + failure.getMessage(), failure.getMessage().contains("Keys"));
   }
 
   @Test

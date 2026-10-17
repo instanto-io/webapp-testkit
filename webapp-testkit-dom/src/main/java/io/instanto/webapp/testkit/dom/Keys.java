@@ -14,9 +14,9 @@ package io.instanto.webapp.testkit.dom;
  * }</pre>
  *
  * <p>A press carries three values a handler may read — {@code key}, {@code code} and the legacy
- * {@code keyCode} — and they are derived from this name. A name that is not one of these and is
- * not a single character is rejected, because it would otherwise produce an event with no code
- * and a zero key code, which some handlers quietly ignore.
+ * {@code keyCode} — and they are derived from this name. A name that is not one of these and is not
+ * a single character is rejected, because it would otherwise produce an event with no code and a
+ * zero key code, which some handlers quietly ignore.
  */
 public final class Keys {
 
