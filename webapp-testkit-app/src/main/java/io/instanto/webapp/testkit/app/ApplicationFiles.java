@@ -2,10 +2,12 @@ package io.instanto.webapp.testkit.app;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
-import java.util.Comparator;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +47,7 @@ public final class ApplicationFiles {
     Path target = destination.toAbsolutePath().normalize();
     if (!Files.isDirectory(root)) throw new IOException("Application is not a directory: " + root);
     Path parent = target.getParent();
+    if (parent == null) throw new IOException("Destination must not be a filesystem root");
     Files.createDirectories(parent);
     target = parent.toRealPath().resolve(target.getFileName());
     if (target.startsWith(root))
@@ -57,22 +60,35 @@ public final class ApplicationFiles {
       }
       deleteTree(target);
     }
-    try (var paths = Files.walk(root)) {
-      for (Path file : paths.sorted().toList()) {
-        if (Files.isSymbolicLink(file))
-          throw new IOException("Application contains a symbolic link: " + file);
-        Path output = target.resolve(root.relativize(file));
-        if (Files.isDirectory(file)) {
-          Files.createDirectories(output);
-        } else if (file.toString().endsWith(".html") || file.toString().endsWith(".htm")) {
-          Files.writeString(
-              output,
-              instrument(Files.readString(file, StandardCharsets.UTF_8)),
-              StandardCharsets.UTF_8);
-        } else {
-          Files.copy(file, output, StandardCopyOption.COPY_ATTRIBUTES);
-        }
-      }
+    final Path outputRoot = target;
+    try {
+      Files.walkFileTree(
+          root,
+          new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult preVisitDirectory(Path directory, BasicFileAttributes attributes)
+                throws IOException {
+              Files.createDirectories(outputRoot.resolve(root.relativize(directory)));
+              return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attributes)
+                throws IOException {
+              if (attributes.isSymbolicLink())
+                throw new IOException("Application contains a symbolic link: " + file);
+              Path output = outputRoot.resolve(root.relativize(file));
+              if (file.toString().endsWith(".html") || file.toString().endsWith(".htm")) {
+                Files.writeString(
+                    output,
+                    instrument(Files.readString(file, StandardCharsets.UTF_8)),
+                    StandardCharsets.UTF_8);
+              } else {
+                Files.copy(file, output, StandardCopyOption.COPY_ATTRIBUTES);
+              }
+              return FileVisitResult.CONTINUE;
+            }
+          });
       Files.writeString(target.resolve(STAGED), "Staged browser application\n");
     } catch (IOException failure) {
       try {
@@ -86,9 +102,24 @@ public final class ApplicationFiles {
 
   private static void deleteTree(Path root) throws IOException {
     if (!Files.exists(root)) return;
-    try (var paths = Files.walk(root)) {
-      for (Path path : paths.sorted(Comparator.reverseOrder()).toList()) Files.delete(path);
-    }
+    Files.walkFileTree(
+        root,
+        new SimpleFileVisitor<Path>() {
+          @Override
+          public FileVisitResult visitFile(Path file, BasicFileAttributes attributes)
+              throws IOException {
+            Files.delete(file);
+            return FileVisitResult.CONTINUE;
+          }
+
+          @Override
+          public FileVisitResult postVisitDirectory(Path directory, IOException failure)
+              throws IOException {
+            if (failure != null) throw failure;
+            Files.delete(directory);
+            return FileVisitResult.CONTINUE;
+          }
+        });
   }
 
   static String instrument(String html) throws IOException {

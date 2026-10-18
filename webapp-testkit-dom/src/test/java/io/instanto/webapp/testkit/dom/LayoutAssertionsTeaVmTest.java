@@ -59,7 +59,7 @@ public class LayoutAssertionsTeaVmTest {
 
     assertEquals(80.5, box.width(), 0.01);
     assertEquals(34.75, box.height(), 0.01);
-    assertTrue("fractional left preserved: " + box.left(), box.left() % 1 != 0);
+    assertNotEquals("fractional left preserved", 0.0, box.left() % 1, 0.0001);
   }
 
   @Test

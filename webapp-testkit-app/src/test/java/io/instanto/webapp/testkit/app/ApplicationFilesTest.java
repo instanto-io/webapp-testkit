@@ -13,6 +13,15 @@ public class ApplicationFilesTest {
   @Rule public TemporaryFolder temporary = new TemporaryFolder();
 
   @Test
+  public void rejectsFilesystemRootAsDestination() throws Exception {
+    Path app = temporary.newFolder("app").toPath();
+    IOException failure =
+        assertThrows(
+            IOException.class, () -> ApplicationFiles.stage(app, app.toAbsolutePath().getRoot()));
+    assertTrue(failure.getMessage().contains("root"));
+  }
+
+  @Test
   public void preservesAssetTreeAndObservesErrorsBeforeApplicationStartup() throws Exception {
     Path app = temporary.newFolder("app").toPath();
     Files.createDirectories(app.resolve("permutations"));

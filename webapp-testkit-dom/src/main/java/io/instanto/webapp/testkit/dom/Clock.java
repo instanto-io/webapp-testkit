@@ -5,9 +5,12 @@
  */
 package io.instanto.webapp.testkit.dom;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NavigableSet;
 import java.util.Objects;
+import java.util.TreeSet;
 import org.teavm.jso.JSObject;
 
 /**
@@ -37,7 +40,12 @@ public final class Clock {
 
   private static final int MAXIMUM_CALLBACKS_PER_TICK = 100_000;
 
-  private final List<ScheduledCall> scheduled = new ArrayList<>();
+  private final NavigableSet<ScheduledCall> scheduled =
+      new TreeSet<>(
+          Comparator.comparingLong((ScheduledCall call) -> call.due)
+              .thenComparingLong(call -> call.sequence));
+  private final Map<Integer, ScheduledCall> handles = new HashMap<>();
+  private long nextSequence;
   private long baseTime = 1_600_000_000_000L;
   private long elapsed;
   private int nextHandle = 1;
@@ -76,6 +84,7 @@ public final class Clock {
       throw new IllegalStateException("The test clock is already installed");
     }
     scheduled.clear();
+    handles.clear();
     elapsed = 0;
     BrowserTimers.install(window, this::schedule, this::cancel, () -> now(), () -> elapsed);
     installed = true;
@@ -89,6 +98,7 @@ public final class Clock {
     }
     installed = false;
     scheduled.clear();
+    handles.clear();
     BrowserTimers.uninstall(window);
   }
 
@@ -141,10 +151,12 @@ public final class Clock {
       }
 
       elapsed = Math.max(elapsed, next.due);
+      scheduled.remove(next);
       if (next.repeating) {
         next.due = elapsed + Math.max(next.delay, 1);
+        scheduled.add(next);
       } else {
-        scheduled.remove(next);
+        handles.remove(next.handle);
       }
       BrowserTimers.run(next.callback);
     }
@@ -152,43 +164,42 @@ public final class Clock {
   }
 
   private ScheduledCall nextDueBy(long target) {
-    ScheduledCall earliest = null;
-    for (ScheduledCall candidate : scheduled) {
-      if (candidate.due > target) {
-        continue;
-      }
-      if (earliest == null
-          || candidate.due < earliest.due
-          || (candidate.due == earliest.due && candidate.sequence < earliest.sequence)) {
-        earliest = candidate;
-      }
+    if (scheduled.isEmpty()) {
+      return null;
     }
-    return earliest;
+    ScheduledCall earliest = scheduled.first();
+    return earliest.due <= target ? earliest : null;
   }
 
   private int schedule(JSObject callback, int delay, boolean repeating) {
     int handle = nextHandle++;
-    scheduled.add(
-        new ScheduledCall(handle, callback, elapsed + Math.max(delay, 0), delay, repeating));
+    ScheduledCall call =
+        new ScheduledCall(
+            handle, callback, elapsed + Math.max(delay, 0), delay, repeating, nextSequence++);
+    scheduled.add(call);
+    handles.put(handle, call);
     return handle;
   }
 
   private void cancel(int handle) {
-    scheduled.removeIf(call -> call.handle == handle);
+    ScheduledCall call = handles.remove(handle);
+    if (call != null) {
+      scheduled.remove(call);
+    }
   }
 
   private static final class ScheduledCall {
-
-    private static int sequenceGenerator;
 
     private final int handle;
     private final JSObject callback;
     private final int delay;
     private final boolean repeating;
-    private final int sequence = sequenceGenerator++;
+    private final long sequence;
     private long due;
 
-    private ScheduledCall(int handle, JSObject callback, long due, int delay, boolean repeating) {
+    private ScheduledCall(
+        int handle, JSObject callback, long due, int delay, boolean repeating, long sequence) {
+      this.sequence = sequence;
       this.handle = handle;
       this.callback = callback;
       this.due = due;

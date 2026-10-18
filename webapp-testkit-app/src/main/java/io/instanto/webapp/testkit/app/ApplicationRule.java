@@ -81,23 +81,24 @@ public final class ApplicationRule implements TestRule {
   public Statement apply(Statement base, Description description) {
     return new Statement() {
       @Override
+      @SuppressWarnings("java:S1181") // Browser and TeaVM JS exceptions can surface as Error
       public void evaluate() throws Throwable {
-        application =
-            FramedApplication.open(url, width, height).awaitReady(ready, timeoutMilliseconds);
+        FramedApplication opened = FramedApplication.open(url, width, height);
+        application = opened;
         Throwable failure = null;
         try {
-          Dom.use(application.page().root());
+          opened.awaitReady(ready, timeoutMilliseconds);
+          Dom.use(opened.page().root());
           base.evaluate();
         } catch (Throwable testFailure) {
           failure = testFailure;
         } finally {
-          FramedApplication opened = application;
           application = null;
           // Close before resetting, because the container Dom clears is the frame's host.
           // Startup errors matter too, but never at the cost of hiding why the test failed.
           try {
             opened.close();
-          } catch (RuntimeException | Error applicationFailure) {
+          } catch (Exception | Error applicationFailure) {
             // addSuppressed is unreliable for natively raised throwables, so the first wins.
             if (failure == null) {
               failure = applicationFailure;
@@ -105,7 +106,9 @@ public final class ApplicationRule implements TestRule {
           }
           Dom.reset();
         }
-        if (failure != null) throw failure;
+        if (failure != null) {
+          throw failure;
+        }
       }
     };
   }

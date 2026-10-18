@@ -34,6 +34,41 @@ public class ClockTeaVmTest {
   }
 
   @Test
+  public void manyTimersPreserveDueOrderAndCancellation() {
+    clock().install();
+    List<Integer> ran = new ArrayList<>();
+    for (int i = 2000; i >= 1; i--) {
+      final int value = i;
+      int handle = Window.setTimeout(() -> ran.add(value), i);
+      if (i % 2 == 0) Window.clearTimeout(handle);
+    }
+    assertEquals(1000, clock().pending());
+    clock().tick(2000);
+    assertEquals(1000, ran.size());
+    for (int i = 0; i < ran.size(); i++) assertEquals(2 * i + 1, ran.get(i).intValue());
+    assertEquals(0, clock().pending());
+  }
+
+  @Test
+  public void equalDueTimersRetainSchedulingOrderWhenAnIntervalCancelsItself() {
+    clock().install();
+    List<String> ran = new ArrayList<>();
+    int[] interval = {0};
+    interval[0] =
+        Window.setInterval(
+            () -> {
+              ran.add("interval");
+              Window.clearInterval(interval[0]);
+            },
+            10);
+    Window.setTimeout(() -> ran.add("first"), 10);
+    Window.setTimeout(() -> ran.add("second"), 10);
+    clock().tick(30);
+    assertEquals(List.of("interval", "first", "second"), ran);
+    assertEquals(0, clock().pending());
+  }
+
+  @Test
   public void runsATimeoutOnlyWhenTheClockReachesIt() {
     clock().install();
     List<String> ran = new ArrayList<>();

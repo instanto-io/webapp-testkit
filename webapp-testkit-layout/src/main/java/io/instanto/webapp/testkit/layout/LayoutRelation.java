@@ -11,7 +11,7 @@ package io.instanto.webapp.testkit.layout;
  * <p>Each constant owns both halves so that a predicate and its diagnostics cannot drift apart.
  */
 public enum LayoutRelation {
-  BELOW("to be below", "vertical gap") {
+  BELOW("to be below", LayoutRelation.VERTICAL_GAP) {
     @Override
     boolean holds(LayoutBox a, LayoutBox b, double t) {
       return a.top() + t >= b.bottom();
@@ -22,7 +22,7 @@ public enum LayoutRelation {
       return a.top() - b.bottom();
     }
   },
-  ABOVE("to be above", "vertical gap") {
+  ABOVE("to be above", LayoutRelation.VERTICAL_GAP) {
     @Override
     boolean holds(LayoutBox a, LayoutBox b, double t) {
       return a.bottom() - t <= b.top();
@@ -33,7 +33,7 @@ public enum LayoutRelation {
       return b.top() - a.bottom();
     }
   },
-  LEFT_OF("to be left of", "horizontal gap") {
+  LEFT_OF("to be left of", LayoutRelation.HORIZONTAL_GAP) {
     @Override
     boolean holds(LayoutBox a, LayoutBox b, double t) {
       return a.right() - t <= b.left();
@@ -44,7 +44,7 @@ public enum LayoutRelation {
       return b.left() - a.right();
     }
   },
-  RIGHT_OF("to be right of", "horizontal gap") {
+  RIGHT_OF("to be right of", LayoutRelation.HORIZONTAL_GAP) {
     @Override
     boolean holds(LayoutBox a, LayoutBox b, double t) {
       return a.left() + t >= b.right();
@@ -103,7 +103,7 @@ public enum LayoutRelation {
    * Edges meet vertically <em>and</em> the horizontal ranges overlap. Without the second condition
    * two boxes at opposite corners touch whenever their edges share a coordinate.
    */
-  TOUCHES_VERTICALLY("to touch vertically", "vertical gap") {
+  TOUCHES_VERTICALLY("to touch vertically", LayoutRelation.VERTICAL_GAP) {
     @Override
     boolean holds(LayoutBox a, LayoutBox b, double t) {
       boolean edgesMeet =
@@ -116,7 +116,7 @@ public enum LayoutRelation {
       return Math.min(Math.abs(a.bottom() - b.top()), Math.abs(b.bottom() - a.top()));
     }
   },
-  TOUCHES_HORIZONTALLY("to touch horizontally", "horizontal gap") {
+  TOUCHES_HORIZONTALLY("to touch horizontally", LayoutRelation.HORIZONTAL_GAP) {
     @Override
     boolean holds(LayoutBox a, LayoutBox b, double t) {
       boolean edgesMeet =
@@ -129,6 +129,9 @@ public enum LayoutRelation {
       return Math.min(Math.abs(a.right() - b.left()), Math.abs(b.right() - a.left()));
     }
   };
+
+  private static final String VERTICAL_GAP = "vertical gap";
+  private static final String HORIZONTAL_GAP = "horizontal gap";
 
   private final String description;
   private final String measurement;

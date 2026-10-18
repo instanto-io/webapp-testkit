@@ -97,6 +97,20 @@ public class ScopedQueriesTeaVmTest {
   }
 
   @Test
+  public void htmlQueriesIgnoreSvgNodesButIncludeTheirHtmlDescendants() {
+    render(
+        "<button id='save'><svg aria-hidden='true'><path d='M0 0'/></svg>Save</button>"
+            + "<svg><foreignObject><div xmlns='http://www.w3.org/1999/xhtml'"
+            + " id='caption'>Caption</div></foreignObject></svg>");
+
+    expect(findByText("Save")).toHaveAttribute("id", "save");
+    expect(findByRole("button", "Save")).toHaveAttribute("id", "save");
+    expect(findByText("Caption")).toHaveAttribute("id", "caption");
+    assertEquals(2, Dom.findAll("*").size());
+    assertTrue(Dom.findAll("svg").isEmpty());
+  }
+
+  @Test
   public void matchesNormalizedNestedPartialAndCaseInsensitiveText() {
     render("<p id='message'>  Save <strong>this</strong> timesheet  </p>");
 

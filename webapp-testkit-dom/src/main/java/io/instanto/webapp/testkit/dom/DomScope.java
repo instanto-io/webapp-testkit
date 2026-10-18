@@ -13,7 +13,7 @@ import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.xml.Element;
 import org.teavm.jso.dom.xml.NodeList;
 
-/** Queries whose search is restricted to the descendants of one element. */
+/** Queries restricted to the HTML descendants of one element, including HTML inside SVG. */
 public final class DomScope {
 
   private final HTMLElement root;
@@ -56,13 +56,14 @@ public final class DomScope {
     return one("CSS selector \"" + selector + "\"", findAll(selector), true);
   }
 
-  /** Finds every CSS match in document order. */
+  /** Finds every HTML element matching the CSS selector, in document order. */
   public List<HTMLElement> findAll(String selector) {
     Objects.requireNonNull(selector, "selector");
     NodeList<? extends Element> found = root.querySelectorAll(selector);
     List<HTMLElement> elements = new ArrayList<>(found.getLength());
     for (int index = 0; index < found.getLength(); index++) {
-      elements.add((HTMLElement) found.get(index));
+      Element candidate = found.get(index);
+      if (candidate instanceof HTMLElement) elements.add((HTMLElement) candidate);
     }
     return elements;
   }
@@ -378,12 +379,7 @@ public final class DomScope {
   }
 
   private List<HTMLElement> descendants() {
-    NodeList<? extends Element> found = root.querySelectorAll("*");
-    List<HTMLElement> elements = new ArrayList<>(found.getLength());
-    for (int index = 0; index < found.getLength(); index++) {
-      elements.add((HTMLElement) found.get(index));
-    }
-    return elements;
+    return findAll("*");
   }
 
   private HTMLElement one(String description, List<HTMLElement> matches, boolean optional) {

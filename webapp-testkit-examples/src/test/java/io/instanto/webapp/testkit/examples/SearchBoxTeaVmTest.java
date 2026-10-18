@@ -53,7 +53,7 @@ public class SearchBoxTeaVmTest {
     clock().install();
     SearchService searches = mock(SearchService.class);
     when(searches.find("A-17")).thenReturn(List.of("A-17 draft", "A-17 submitted"));
-    SearchBox box = renderSearchBox(searches);
+    renderSearchBox(searches);
 
     type(find("#term"), "A-17");
 

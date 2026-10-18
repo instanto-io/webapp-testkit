@@ -187,7 +187,7 @@ public final class Layout {
   }
 
   private static double checkedTolerance(double tolerance) {
-    if (!(tolerance >= 0)) {
+    if (Double.isNaN(tolerance) || tolerance < 0) {
       throw new IllegalArgumentException("Tolerance cannot be negative: " + tolerance);
     }
     return tolerance;
