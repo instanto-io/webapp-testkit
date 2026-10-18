@@ -112,8 +112,8 @@ public class DomTeaVmTest {
   public void showsTheElementWhenAnAssertionFails() {
     render("<h1 class='title'>Hello Ada</h1>");
 
-    AssertionError failure =
-        assertThrows(AssertionError.class, () -> expect(find("h1")).toHaveText("Goodbye"));
+    var exp = expect(find("h1"));
+    AssertionError failure = assertThrows(AssertionError.class, () -> exp.toHaveText("Goodbye"));
 
     assertTrue(failure.getMessage(), failure.getMessage().contains("Hello Ada"));
     assertTrue(failure.getMessage(), failure.getMessage().contains("<h1"));

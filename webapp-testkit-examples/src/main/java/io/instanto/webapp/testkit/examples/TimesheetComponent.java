@@ -21,7 +21,6 @@ public final class TimesheetComponent {
   private final TimesheetService service;
   private final String month;
   private final HTMLElement root;
-  private HTMLElement status;
 
   public TimesheetComponent(TimesheetService service, String month) {
     this.service = Objects.requireNonNull(service, "service");
@@ -74,7 +73,7 @@ public final class TimesheetComponent {
         });
     section.appendChild(add);
 
-    status = document.createElement("output");
+    HTMLElement status = document.createElement("output");
     status.setTextContent("Not submitted");
     section.appendChild(status);
 

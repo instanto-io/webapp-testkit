@@ -44,6 +44,7 @@ public class ApplicationClockTeaVmTest {
     return null;
   }
 
+  @SuppressWarnings("java:S2925") // Real delay allows in-flight animation frame to settle
   private static void realDelay(long milliseconds) {
     try {
       Thread.sleep(milliseconds);

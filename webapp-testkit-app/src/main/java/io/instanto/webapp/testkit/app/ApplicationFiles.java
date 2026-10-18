@@ -44,23 +44,8 @@ public final class ApplicationFiles {
    */
   public static void stage(Path source, Path destination) throws IOException {
     Path root = source.toRealPath();
-    Path target = destination.toAbsolutePath().normalize();
     if (!Files.isDirectory(root)) throw new IOException("Application is not a directory: " + root);
-    Path parent = target.getParent();
-    if (parent == null) throw new IOException("Destination must not be a filesystem root");
-    Files.createDirectories(parent);
-    target = parent.toRealPath().resolve(target.getFileName());
-    if (target.startsWith(root))
-      throw new IOException("Destination must be outside the source application");
-    if (root.startsWith(target))
-      throw new IOException("Destination must not contain the source application");
-    if (Files.exists(target)) {
-      if (Files.isSymbolicLink(target) || !Files.isRegularFile(target.resolve(STAGED))) {
-        throw new IOException("Application destination already exists: " + target);
-      }
-      deleteTree(target);
-    }
-    final Path outputRoot = target;
+    final Path outputRoot = validateAndPrepareDestination(root, destination);
     try {
       Files.walkFileTree(
           root,
@@ -89,10 +74,10 @@ public final class ApplicationFiles {
               return FileVisitResult.CONTINUE;
             }
           });
-      Files.writeString(target.resolve(STAGED), "Staged browser application\n");
+      Files.writeString(outputRoot.resolve(STAGED), "Staged browser application\n");
     } catch (IOException failure) {
       try {
-        deleteTree(target);
+        deleteTree(outputRoot);
       } catch (IOException cleanup) {
         failure.addSuppressed(cleanup);
       }
@@ -135,5 +120,27 @@ public final class ApplicationFiles {
       throw new IllegalArgumentException(
           "Usage: ApplicationFiles <built-app> <test-classpath-app>");
     stage(Path.of(args[0]), Path.of(args[1]));
+  }
+
+  private static Path validateAndPrepareDestination(Path root, Path destination)
+      throws IOException {
+    Path target = destination.toAbsolutePath().normalize();
+    Path parent = target.getParent();
+    if (parent == null) throw new IOException("Destination must not be a filesystem root");
+    Files.createDirectories(parent);
+    target = parent.toRealPath().resolve(target.getFileName());
+    if (target.startsWith(root)) {
+      throw new IOException("Destination must be outside the source application");
+    }
+    if (root.startsWith(target)) {
+      throw new IOException("Destination must not contain the source application");
+    }
+    if (Files.exists(target)) {
+      if (Files.isSymbolicLink(target) || !Files.isRegularFile(target.resolve(STAGED))) {
+        throw new IOException("Application destination already exists: " + target);
+      }
+      deleteTree(target);
+    }
+    return target;
   }
 }

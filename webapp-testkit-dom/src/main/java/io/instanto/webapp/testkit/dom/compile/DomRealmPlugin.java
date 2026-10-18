@@ -17,42 +17,51 @@ import org.teavm.vm.spi.TeaVMPlugin;
 public final class DomRealmPlugin implements TeaVMPlugin {
   @Override
   public void install(TeaVMHost host) {
-    TeaVMJavaScriptHost javascript = host.getExtension(TeaVMJavaScriptHost.class);
     ValueType object = ValueType.object("org.teavm.jso.JSObject");
+    installJavaScript(host, object);
+    installWasm(host, object);
+  }
+
+  private void installJavaScript(TeaVMHost host, ValueType object) {
+    TeaVMJavaScriptHost javascript = host.getExtension(TeaVMJavaScriptHost.class);
+    if (javascript == null) {
+      return;
+    }
     for (String name : new String[] {"instanceOf", "instanceOfOrNull"}) {
-      if (javascript != null) {
-        javascript.add(
-            new MethodReference("org.teavm.jso.impl.JS", name, object, object, ValueType.BOOLEAN),
-            new DomInstanceOf(name.endsWith("OrNull")));
-      }
+      javascript.add(
+          new MethodReference("org.teavm.jso.impl.JS", name, object, object, ValueType.BOOLEAN),
+          new DomInstanceOf(name.endsWith("OrNull")));
     }
-    if (host.getExtension(TeaVMWasmGCHost.class) != null) {
-      // Wasm imports its JSO checks; JavaScript injectors cannot change those imports.
-      host.add(
-          (cls, context) -> {
-            if (!cls.getName().equals("org.teavm.jso.impl.JS")) return;
-            for (String name : new String[] {"instanceOf", "instanceOfOrNull"}) {
-              var method =
-                  cls.getMethod(new MethodDescriptor(name, object, object, ValueType.BOOLEAN));
-              if (method == null || !method.getModifiers().contains(ElementModifier.NATIVE)) {
-                throw new IllegalStateException(
-                    "Unsupported TeaVM DOM cast implementation: " + name);
-              }
-              method.getModifiers().remove(ElementModifier.NATIVE);
-              method.getAnnotations().remove(Import.class.getName());
-              var emitter = ProgramEmitter.create(method, context.getHierarchy());
-              emitter
-                  .invoke(
-                      DomRealmSupport.class,
-                      "check",
-                      boolean.class,
-                      emitter.var(1, object),
-                      emitter.var(2, object),
-                      emitter.constant(name.endsWith("OrNull") ? 1 : 0))
-                  .returnValue();
+  }
+
+  private void installWasm(TeaVMHost host, ValueType object) {
+    if (host.getExtension(TeaVMWasmGCHost.class) == null) {
+      return;
+    }
+    // Wasm imports its JSO checks; JavaScript injectors cannot change those imports.
+    host.add(
+        (cls, context) -> {
+          if (!cls.getName().equals("org.teavm.jso.impl.JS")) return;
+          for (String name : new String[] {"instanceOf", "instanceOfOrNull"}) {
+            var method =
+                cls.getMethod(new MethodDescriptor(name, object, object, ValueType.BOOLEAN));
+            if (method == null || !method.getModifiers().contains(ElementModifier.NATIVE)) {
+              throw new IllegalStateException("Unsupported TeaVM DOM cast implementation: " + name);
             }
-          });
-    }
+            method.getModifiers().remove(ElementModifier.NATIVE);
+            method.getAnnotations().remove(Import.class.getName());
+            var emitter = ProgramEmitter.create(method, context.getHierarchy());
+            emitter
+                .invoke(
+                    DomRealmSupport.class,
+                    "check",
+                    boolean.class,
+                    emitter.var(1, object),
+                    emitter.var(2, object),
+                    emitter.constant(name.endsWith("OrNull") ? 1 : 0))
+                .returnValue();
+          }
+        });
   }
 
   private record DomInstanceOf(boolean nullable) implements Injector {

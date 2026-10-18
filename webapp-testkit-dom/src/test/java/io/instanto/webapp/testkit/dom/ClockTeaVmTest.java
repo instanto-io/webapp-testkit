@@ -179,7 +179,7 @@ public class ClockTeaVmTest {
     clock().install().setTime(5_000_000L);
     List<Double> timestamps = new ArrayList<>();
 
-    requestAnimationFrame(timestamp -> timestamps.add(timestamp));
+    requestAnimationFrame(timestamps::add);
     clock().tick(16);
 
     assertEquals(16D, timestamps.get(0), 0D);
@@ -243,17 +243,18 @@ public class ClockTeaVmTest {
 
   @Test
   public void refusesToAdvanceBeforeItIsInstalled() {
+    Clock clock = clock();
     IllegalStateException failure =
-        assertThrows(IllegalStateException.class, () -> clock().tick(100));
+        assertThrows(IllegalStateException.class, () -> clock.tick(100));
 
     assertTrue(failure.getMessage(), failure.getMessage().contains("Install"));
   }
 
   @Test
   public void refusesTwoInstallations() {
-    clock().install();
+    Clock clock = clock().install();
 
-    assertThrows(IllegalStateException.class, () -> clock().install());
+    assertThrows(IllegalStateException.class, clock::install);
   }
 
   @Test

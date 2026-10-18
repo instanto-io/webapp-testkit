@@ -143,10 +143,10 @@ public class LayoutTest {
   public void argumentErrors() {
     Box ok = new Box(0, 0, 10, 10);
     assertThrows(IllegalArgumentException.class, () -> Layout.isBelow(ok, ok, -0.1));
-    assertThrows(
-        IllegalArgumentException.class, () -> Layout.isBelow(new Box(0, 0, -1, 10), ok, T));
-    assertThrows(
-        IllegalArgumentException.class, () -> Layout.hasHeight(new Box(0, 0, 10, -1), 10, T));
+    Box invalidWidth = new Box(0, 0, -1, 10);
+    assertThrows(IllegalArgumentException.class, () -> Layout.isBelow(invalidWidth, ok, T));
+    Box invalidHeight = new Box(0, 0, 10, -1);
+    assertThrows(IllegalArgumentException.class, () -> Layout.hasHeight(invalidHeight, 10, T));
     assertThrows(NullPointerException.class, () -> Layout.isBelow(null, ok, T));
     assertThrows(NullPointerException.class, () -> Layout.isBelow(ok, null, T));
     assertThrows(NullPointerException.class, () -> Layout.describe(null));

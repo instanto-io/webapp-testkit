@@ -15,6 +15,9 @@ import org.teavm.jso.dom.xml.NodeList;
 
 /** Queries restricted to the HTML descendants of one element, including HTML inside SVG. */
 public final class DomScope {
+  private static final String ATTR_PLACEHOLDER = "placeholder";
+  private static final String ATTR_TITLE = "title";
+  private static final String ATTR_DATA_TESTID = "data-testid";
 
   private final HTMLElement root;
 
@@ -63,7 +66,7 @@ public final class DomScope {
     List<HTMLElement> elements = new ArrayList<>(found.getLength());
     for (int index = 0; index < found.getLength(); index++) {
       Element candidate = found.get(index);
-      if (candidate instanceof HTMLElement) elements.add((HTMLElement) candidate);
+      if (candidate instanceof HTMLElement htmlElement) elements.add(htmlElement);
     }
     return elements;
   }
@@ -185,7 +188,7 @@ public final class DomScope {
   }
 
   public HTMLElement findByPlaceholderText(TextMatch text) {
-    return one("placeholder " + text.description(), attribute("placeholder", text), false);
+    return one("placeholder " + text.description(), attribute(ATTR_PLACEHOLDER, text), false);
   }
 
   public HTMLElement findByPlaceholderTextOrNull(String text) {
@@ -193,7 +196,7 @@ public final class DomScope {
   }
 
   public HTMLElement findByPlaceholderTextOrNull(TextMatch text) {
-    return one("placeholder " + text.description(), attribute("placeholder", text), true);
+    return one("placeholder " + text.description(), attribute(ATTR_PLACEHOLDER, text), true);
   }
 
   public List<HTMLElement> findAllByPlaceholderText(String text) {
@@ -201,7 +204,7 @@ public final class DomScope {
   }
 
   public List<HTMLElement> findAllByPlaceholderText(TextMatch text) {
-    return attribute("placeholder", text);
+    return attribute(ATTR_PLACEHOLDER, text);
   }
 
   public HTMLElement awaitByPlaceholderText(String text) {
@@ -281,7 +284,7 @@ public final class DomScope {
   }
 
   public HTMLElement findByTitle(TextMatch text) {
-    return findByAttribute("title ", "title", text, false);
+    return findByAttribute("title ", ATTR_TITLE, text, false);
   }
 
   public HTMLElement findByTitleOrNull(String text) {
@@ -289,7 +292,7 @@ public final class DomScope {
   }
 
   public HTMLElement findByTitleOrNull(TextMatch text) {
-    return findByAttribute("title ", "title", text, true);
+    return findByAttribute("title ", ATTR_TITLE, text, true);
   }
 
   public List<HTMLElement> findAllByTitle(String text) {
@@ -297,7 +300,7 @@ public final class DomScope {
   }
 
   public List<HTMLElement> findAllByTitle(TextMatch text) {
-    return attribute("title", text);
+    return attribute(ATTR_TITLE, text);
   }
 
   public HTMLElement awaitByTitle(String text) {
@@ -309,15 +312,15 @@ public final class DomScope {
   }
 
   public HTMLElement findByTestId(String testId) {
-    return findByAttribute("test id ", "data-testid", TextMatch.exact(testId), false);
+    return findByAttribute("test id ", ATTR_DATA_TESTID, TextMatch.exact(testId), false);
   }
 
   public HTMLElement findByTestIdOrNull(String testId) {
-    return findByAttribute("test id ", "data-testid", TextMatch.exact(testId), true);
+    return findByAttribute("test id ", ATTR_DATA_TESTID, TextMatch.exact(testId), true);
   }
 
   public List<HTMLElement> findAllByTestId(String testId) {
-    return attribute("data-testid", TextMatch.exact(testId));
+    return attribute(ATTR_DATA_TESTID, TextMatch.exact(testId));
   }
 
   public HTMLElement awaitByTestId(String testId) {

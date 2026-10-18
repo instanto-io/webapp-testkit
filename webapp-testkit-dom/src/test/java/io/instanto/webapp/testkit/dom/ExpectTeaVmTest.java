@@ -35,7 +35,8 @@ public class ExpectTeaVmTest {
     expect(find("p")).not().toHaveClass("hidden");
     expect(find("p")).not().toHaveText("elsewhere");
 
-    assertThrows(AssertionError.class, () -> expect(find("p")).not().toHaveClass("shown"));
+    var expP = expect(find("p")).not();
+    assertThrows(AssertionError.class, () -> expP.toHaveClass("shown"));
   }
 
   @Test
@@ -50,8 +51,8 @@ public class ExpectTeaVmTest {
   public void saysWhatItWantedWhenNegated() {
     render("<p class='shown'>here</p>");
 
-    AssertionError failure =
-        assertThrows(AssertionError.class, () -> expect(find("p")).not().toHaveText("here"));
+    var expNot = expect(find("p")).not();
+    AssertionError failure = assertThrows(AssertionError.class, () -> expNot.toHaveText("here"));
 
     assertTrue(failure.getMessage(), failure.getMessage().contains("Wanted no text"));
   }
@@ -114,8 +115,8 @@ public class ExpectTeaVmTest {
   public void reportsTheElementWhenSomethingFails() {
     render("<button id='save' disabled>Save</button>");
 
-    AssertionError failure =
-        assertThrows(AssertionError.class, () -> expect(find("#save")).toBeEnabled());
+    var expSave = expect(find("#save"));
+    AssertionError failure = assertThrows(AssertionError.class, expSave::toBeEnabled);
 
     assertTrue(failure.getMessage(), failure.getMessage().contains("<button"));
     assertTrue(failure.getMessage(), failure.getMessage().contains("disabled"));

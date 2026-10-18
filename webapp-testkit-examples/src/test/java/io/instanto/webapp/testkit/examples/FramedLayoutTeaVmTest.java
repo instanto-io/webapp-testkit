@@ -46,10 +46,9 @@ public class FramedLayoutTeaVmTest {
     HTMLElement inTheTestPage = Dom.container().getOwnerDocument().createElement("div");
     Dom.container().appendChild(inTheTestPage);
 
+    var expPage = expect(inTheTestPage);
     IllegalArgumentException failure =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> expect(inTheTestPage).toBeLeftOf(insideApplication));
+        assertThrows(IllegalArgumentException.class, () -> expPage.toBeLeftOf(insideApplication));
 
     assertTrue(failure.getMessage(), failure.getMessage().contains("across documents"));
     assertTrue(

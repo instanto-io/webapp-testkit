@@ -86,7 +86,7 @@ public final class Clock {
     scheduled.clear();
     handles.clear();
     elapsed = 0;
-    BrowserTimers.install(window, this::schedule, this::cancel, () -> now(), () -> elapsed);
+    BrowserTimers.install(window, this::schedule, this::cancel, this::now, () -> elapsed);
     installed = true;
     return this;
   }

@@ -41,7 +41,8 @@ public class FramedApplicationIntegrationTest {
       expect(child.findByRole("button", "Toggle")).toHaveAttribute("aria-pressed", "true");
       expect(second.page().findByRole("button", "Toggle")).toHaveAttribute("aria-pressed", "false");
       expect(Dom.findByRole("textbox", "Parent name")).toHaveValue("");
-      assertThrows(IllegalArgumentException.class, () -> child.within(second.page().root()));
+      HTMLElement secondRoot = second.page().root();
+      assertThrows(IllegalArgumentException.class, () -> child.within(secondRoot));
     }
   }
 
@@ -118,7 +119,8 @@ public class FramedApplicationIntegrationTest {
     try {
       expect(Dom.within(section).findByRole("button", "Outside container"))
           .toHaveText("Outside container");
-      assertThrows(IllegalArgumentException.class, () -> Dom.page().within(section));
+      DomScope page = Dom.page();
+      assertThrows(IllegalArgumentException.class, () -> page.within(section));
     } finally {
       section.getParentNode().removeChild(section);
     }

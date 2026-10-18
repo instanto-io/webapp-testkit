@@ -19,6 +19,9 @@ public final class Dom {
   private static final int WAIT_INTERVAL_MILLISECONDS = 10;
 
   private static final Clock CLOCK = new Clock();
+  private static final String ELEMENT_PARAM = "element";
+  private static final String EVENT_INPUT = "input";
+  private static final String EVENT_CHANGE = "change";
 
   private static HTMLElement container;
   private static HTMLElement scope;
@@ -57,7 +60,7 @@ public final class Dom {
 
   /** The computed value on a pseudo-element, such as {@code "::before"}. */
   public static String computedStyle(HTMLElement element, String pseudoElement, String property) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     Objects.requireNonNull(property, "property");
     if (property.isBlank()) {
       throw new IllegalArgumentException("Property cannot be blank");
@@ -86,7 +89,7 @@ public final class Dom {
    * in it — such as the frame the application runs in — survives until {@link #reset()}.
    */
   public static void use(HTMLElement element) {
-    scope = Objects.requireNonNull(element, "element");
+    scope = Objects.requireNonNull(element, ELEMENT_PARAM);
   }
 
   /** Convenience for replacing the test container's contents with a small markup fixture. */
@@ -378,7 +381,7 @@ public final class Dom {
 
   /** Clicks an element. Wrap this call in a framework-specific flush boundary when required. */
   public static HTMLElement click(HTMLElement element) {
-    Objects.requireNonNull(element, "element").click();
+    Objects.requireNonNull(element, ELEMENT_PARAM).click();
     return element;
   }
 
@@ -388,15 +391,16 @@ public final class Dom {
 
   /** Replaces a field value one character at a time using keyboard and input events. */
   public static HTMLElement type(HTMLElement element, String text) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     Objects.requireNonNull(text, "text");
     requireValueControl(element, "type");
     Browser.focus(element);
     boolean hadValue = !Browser.value(element).isEmpty();
     Browser.setNativeValue(element, "");
-    if (hadValue) Browser.dispatch(element, "input");
+    if (hadValue) Browser.dispatch(element, EVENT_INPUT);
     StringBuilder typed = new StringBuilder();
-    for (int index = 0; index < text.length(); ) {
+    int index = 0;
+    while (index < text.length()) {
       int codePoint = text.codePointAt(index);
       String character = new String(Character.toChars(codePoint));
       index += Character.charCount(codePoint);
@@ -406,18 +410,18 @@ public final class Dom {
         Browser.finishTypingCharacter(element, character);
       }
     }
-    Browser.dispatch(element, "change");
+    Browser.dispatch(element, EVENT_CHANGE);
     return element;
   }
 
   /** Clears a field and dispatches input and change events. */
   public static HTMLElement clear(HTMLElement element) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     requireValueControl(element, "clear");
     Browser.focus(element);
     Browser.setNativeValue(element, "");
-    Browser.dispatch(element, "input");
-    Browser.dispatch(element, "change");
+    Browser.dispatch(element, EVENT_INPUT);
+    Browser.dispatch(element, EVENT_CHANGE);
     return element;
   }
 
@@ -451,7 +455,7 @@ public final class Dom {
   }
 
   public static HTMLElement focus(HTMLElement element) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     Browser.focus(element);
     return element;
   }
@@ -461,7 +465,7 @@ public final class Dom {
   }
 
   public static HTMLElement blur(HTMLElement element) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     Browser.blur(element);
     return element;
   }
@@ -472,7 +476,7 @@ public final class Dom {
 
   /** Moves the pointer over an element using the usual mouse event sequence. */
   public static HTMLElement hover(HTMLElement element) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     Browser.dispatchMouse(element, "mouseover");
     Browser.dispatchMouse(element, "mouseenter");
     Browser.dispatchMouse(element, "mousemove");
@@ -485,7 +489,7 @@ public final class Dom {
 
   /** Moves the pointer away from an element. */
   public static HTMLElement unhover(HTMLElement element) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     Browser.dispatchMouse(element, "mouseout");
     Browser.dispatchMouse(element, "mouseleave");
     return element;
@@ -505,7 +509,7 @@ public final class Dom {
 
   /** Selects one or more options by value and dispatches input and change events. */
   public static HTMLElement selectOptions(HTMLElement element, String... values) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     Objects.requireNonNull(values, "values");
     int result = Browser.selectOptions(element, values);
     if (result == 0)
@@ -517,8 +521,8 @@ public final class Dom {
       throw new IllegalArgumentException(
           "selectOptions() cannot select several values in a single-select element");
     }
-    Browser.dispatch(element, "input");
-    Browser.dispatch(element, "change");
+    Browser.dispatch(element, EVENT_INPUT);
+    Browser.dispatch(element, EVENT_CHANGE);
     return element;
   }
 
@@ -537,7 +541,7 @@ public final class Dom {
   }
 
   public static HTMLElement press(HTMLElement element, String key) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     Objects.requireNonNull(key, "key");
     Browser.dispatchKey(element, "keydown", key);
     Browser.dispatchKey(element, "keyup", key);
@@ -545,7 +549,7 @@ public final class Dom {
   }
 
   public static HTMLElement fire(HTMLElement element, String type) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     Browser.dispatch(element, Objects.requireNonNull(type, "type"));
     return element;
   }
@@ -589,6 +593,8 @@ public final class Dom {
     return "\nThe container holds:\n" + Browser.innerHtml(container);
   }
 
+  @SuppressWarnings(
+      "java:S1181") // In browser execution, JS exceptions and virtual errors manifest as Error
   private static void attempt(
       Runnable assertion,
       int remaining,
@@ -624,7 +630,7 @@ public final class Dom {
   }
 
   private static void requireCheckable(HTMLElement element, String operation) {
-    Objects.requireNonNull(element, "element");
+    Objects.requireNonNull(element, ELEMENT_PARAM);
     String type = Browser.inputType(element);
     if (!"checkbox".equals(type) && !"radio".equals(type)) {
       throw new IllegalArgumentException(operation + "() requires a checkbox or radio input");

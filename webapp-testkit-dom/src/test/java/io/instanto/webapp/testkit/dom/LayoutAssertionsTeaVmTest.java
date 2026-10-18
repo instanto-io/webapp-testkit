@@ -109,9 +109,10 @@ public class LayoutAssertionsTeaVmTest {
             + "<div id='y' style='position:absolute; left:200px; top:0; width:80px; height:34px'></div>"
             + "</div>");
 
-    AssertionError failure =
-        assertThrows(
-            AssertionError.class, () -> expect(Dom.find("#x")).toTouchHorizontally(Dom.find("#y")));
+    HTMLElement x = Dom.find("#x");
+    HTMLElement y = Dom.find("#y");
+    var expX = expect(x);
+    AssertionError failure = assertThrows(AssertionError.class, () -> expX.toTouchHorizontally(y));
 
     String message = failure.getMessage();
     assertTrue(message, message.contains("to touch horizontally"));
@@ -149,6 +150,7 @@ public class LayoutAssertionsTeaVmTest {
     assertThrows(IllegalArgumentException.class, () -> Dom.computedStyle(v, " "));
     assertThrows(IllegalArgumentException.class, () -> Dom.computedStyle(v, " ", "display"));
     assertThrows(NullPointerException.class, () -> Dom.layout(null));
-    assertThrows(IllegalArgumentException.class, () -> expect(v).toHaveWidth(10, -1));
+    var expV = expect(v);
+    assertThrows(IllegalArgumentException.class, () -> expV.toHaveWidth(10, -1));
   }
 }

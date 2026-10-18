@@ -23,6 +23,7 @@ import org.teavm.junit.TeaVMTestRunner;
 @SkipJVM
 public class DomRealmTeaVmTest {
   @Test
+  @SuppressWarnings("java:S1612")
   public void childElementRetainsItsTypeThroughObject() {
     HTMLIFrameElement frame = (HTMLIFrameElement) HTMLDocument.current().createElement("iframe");
     HTMLDocument.current().getBody().appendChild(frame);
