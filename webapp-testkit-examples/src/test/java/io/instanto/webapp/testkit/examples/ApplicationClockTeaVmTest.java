@@ -75,15 +75,24 @@ public class ApplicationClockTeaVmTest {
       assertEquals(frozen.top(), stillFrozen.top(), 0.01);
 
       // Fake time moves, so the frames the application scheduled now run.
-      clock.tick(500);
-      ElementBox advanced = Dom.layout(circle);
+      ElementBox advanced = frozen;
+      // The oscillator can be near a turning point when it is frozen. Sample several
+      // fake-time frames so the assertion does not depend on its initial phase.
+      for (int sample = 0; sample < 6 && !hasMoved(frozen, advanced); sample++) {
+        clock.tick(500);
+        advanced = Dom.layout(circle);
+      }
       assertTrue(
           "ticking the clock advanced the animation: " + frozen + " then " + advanced,
-          Math.abs(advanced.left() - frozen.left()) > 0.5
-              || Math.abs(advanced.top() - frozen.top()) > 0.5);
+          hasMoved(frozen, advanced));
     } finally {
       clock.uninstall();
     }
+  }
+
+  private static boolean hasMoved(ElementBox before, ElementBox after) {
+    return Math.abs(after.left() - before.left()) > 0.5
+        || Math.abs(after.top() - before.top()) > 0.5;
   }
 
   @Test

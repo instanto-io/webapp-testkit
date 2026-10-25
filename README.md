@@ -89,3 +89,18 @@ it builds on:
 - [Support Instanto](https://github.com/sponsors/instanto-io).
 - [Support TeaVM](https://github.com/sponsors/konsoletyper), the compiler that
   brings Java to the browser.
+
+### Browser coverage for Sonar
+
+The build records JVM coverage with JaCoCo and runs the generated JavaScript tests
+under Chromium's V8 coverage collector. TeaVM source maps associate execution
+with this repository's original Java files. The resulting
+`target/browser-coverage.xml` supplies line coverage alongside JaCoCo's JVM
+coverage; it does not infer Java branch coverage or count third-party code.
+Both Chrome and Firefox verification jobs, including Wasm GC tests, must pass
+before publication. Sonar runs once using the combined Java and browser reports.
+
+After compiling the tests, run `npm ci --prefix scripts/browser-coverage`,
+`scripts/browser-coverage/node_modules/.bin/playwright install chromium`,
+`npm test --prefix scripts/browser-coverage`, and
+`npm run collect --prefix scripts/browser-coverage` to reproduce the browser report.

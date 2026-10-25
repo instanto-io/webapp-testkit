@@ -21,20 +21,85 @@ jobs:
             runner: browser-chrome
           - browser_name: Firefox
             runner: browser-firefox
-    uses: instanto-io/instanto-poms/.github/workflows/maven-build.yml@main
-    with:
-      name: Verify in ${{ matrix.browser_name }}
-      goals: clean test
-      # TeaVM 0.16.0 miscompiles top-level timers, catch-path class initialization
-      # and Wasm Promise.await at FULL.
-      # Keep the standalone reproducers and enable FULL explicitly when checking an upgrade.
-      maven-args: >-
-        -Pteavm-browser-tests -Dspotless.skip=true
-        -Dwebapp.testkit.test.browser=${{ matrix.runner }}
-        -Dteavm.junit.wasm-gc.runner=${{ matrix.runner }}
-        -Dteavm.junit.optimized=false -Dteavm.junit.minified=true
-        -Dinstanto.teavm.threadLocalChecks=true
-    secrets: inherit
+    runs-on: [self-hosted, instanto-container]
+    timeout-minutes: 40
+    env:
+      # Install the revisions selected by the Java and Node Playwright drivers.
+      PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
+      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/testkit-${{ matrix.browser_name }}-${{ github.run_id }}
+      # Read and published snapshots live on packages.instanto.io.
+      FORGEJO_PACKAGE_USER: ${{ secrets.FORGEJO_PACKAGE_USER }}
+      FORGEJO_PACKAGE_TOKEN: ${{ secrets.FORGEJO_PACKAGE_TOKEN }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+      # The parents are published to packages.instanto.io. Maven resolves a parent
+      # before reading it, so the registry is declared in job-local settings, with
+      # its credentials; MAVEN_ARGS applies them to every mvn below.
+      - name: Configure Maven for packages.instanto.io
+        run: |
+          set -euo pipefail
+          settings="$RUNNER_TEMP/maven-settings.xml"
+          repo='<id>forgejo-instanto</id><url>https://packages.instanto.io/api/packages/instanto-io/maven</url><releases><enabled>false</enabled></releases><snapshots><enabled>true</enabled></snapshots>'
+          cat > "$settings" <<XML
+          <settings>
+            <servers><server><id>forgejo-instanto</id><username>\${env.FORGEJO_PACKAGE_USER}</username><password>\${env.FORGEJO_PACKAGE_TOKEN}</password></server></servers>
+            <profiles><profile><id>instanto-snapshots</id>
+              <repositories><repository>${repo}</repository></repositories>
+              <pluginRepositories><pluginRepository>${repo}</pluginRepository></pluginRepositories>
+            </profile></profiles>
+            <activeProfiles><activeProfile>instanto-snapshots</activeProfile></activeProfiles>
+          </settings>
+          XML
+          echo "MAVEN_ARGS=--settings $settings" >> "$GITHUB_ENV"
+      - name: Verify JavaScript and Wasm GC in ${{ matrix.browser_name }}
+        # TeaVM 0.16.0 has known FULL optimization regressions in timers,
+        # catch-path initialization and Wasm Promise.await; retain SIMPLE here.
+        run: >-
+          mvn -U -B -ntp clean test
+          -Pteavm-browser-tests -Dspotless.skip=true
+          -Dwebapp.testkit.test.browser=${{ matrix.runner }}
+          -Dteavm.junit.wasm-gc.runner=${{ matrix.runner }}
+          -Dteavm.junit.optimized=false -Dteavm.junit.minified=true
+          -Dinstanto.teavm.threadLocalChecks=true
+      - uses: actions/setup-node@v4
+        if: matrix.browser_name == 'Chrome'
+        with:
+          node-version: '24'
+      - name: Measure Java source coverage in Chromium
+        if: matrix.browser_name == 'Chrome'
+        run: |
+          npm ci --prefix scripts/browser-coverage --ignore-scripts
+          npm test --prefix scripts/browser-coverage
+          scripts/browser-coverage/node_modules/.bin/playwright install chromium
+          npm run collect --prefix scripts/browser-coverage
+      # Analyze once: both browser jobs must still pass before publication.
+      - name: SonarQube Quality Gate
+        if: matrix.browser_name == 'Chrome' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: https://sonar.instanto.io
+        run: |
+          set -euo pipefail
+          : "${SONAR_TOKEN:?SONAR_TOKEN is required for the main-branch quality gate}"
+          mvn -B -ntp sonar:sonar -Dsonar.projectKey=webapp-testkit \
+            -Dsonar.projectName=webapp-testkit -Dsonar.qualitygate.wait=true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verification-${{ matrix.browser_name }}
+          path: |
+            **/target/surefire-reports/**
+            target/browser-coverage.xml
+      - name: Remove job-local browser cache
+        if: always()
+        run: rm -rf -- "$PLAYWRIGHT_BROWSERS_PATH"
 
   publish-snapshot:
     if: github.repository == 'instanto-io/webapp-testkit' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
