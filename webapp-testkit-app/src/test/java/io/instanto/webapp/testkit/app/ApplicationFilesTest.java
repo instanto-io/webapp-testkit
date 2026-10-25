@@ -13,6 +13,54 @@ public class ApplicationFilesTest {
   @Rule public TemporaryFolder temporary = new TemporaryFolder();
 
   @Test
+  public void refusesToReplaceAnAncestorOfTheSource() throws Exception {
+    Path parent = temporary.newFolder("parent").toPath();
+    Path app = Files.createDirectory(parent.resolve("app"));
+    Path original = Files.writeString(app.resolve("keep.js"), "original");
+    IOException failure =
+        assertThrows(IOException.class, () -> ApplicationFiles.stage(app, parent));
+    assertTrue(failure.getMessage().contains("must not contain"));
+    assertEquals("original", Files.readString(original));
+  }
+
+  @Test
+  public void refusesSymlinkDestinationsEvenWhenTheTargetWasStaged() throws Exception {
+    Path app = temporary.newFolder("app").toPath();
+    Files.writeString(app.resolve("asset.js"), "keep");
+    Path staged = temporary.getRoot().toPath().resolve("staged");
+    ApplicationFiles.stage(app, staged);
+    Path alias = temporary.getRoot().toPath().resolve("alias");
+    Files.createSymbolicLink(alias, staged);
+    assertThrows(IOException.class, () -> ApplicationFiles.stage(app, alias));
+    assertTrue(Files.isSymbolicLink(alias));
+    assertEquals("keep", Files.readString(staged.resolve("asset.js")));
+  }
+
+  @Test
+  public void buildToolEntryPointValidatesArgumentsAndStagesHtmDocuments() throws Exception {
+    assertThrows(IllegalArgumentException.class, () -> ApplicationFiles.main(new String[0]));
+    Path app = temporary.newFolder("app").toPath();
+    Files.writeString(app.resolve("index.htm"), "<html><head></head><body>Ready</body></html>");
+    Path target = temporary.getRoot().toPath().resolve("staged");
+    ApplicationFiles.main(new String[] {app.toString(), target.toString()});
+    assertTrue(
+        Files.readString(target.resolve("index.htm")).contains("data-webapp-testkit-diagnostics"));
+    assertThrows(
+        IOException.class, () -> ApplicationFiles.stage(target, app.resolveSibling("second")));
+    assertTrue(Files.exists(target.resolve("index.htm")));
+  }
+
+  @Test
+  public void refusesARegularFileAsTheSourceApplication() throws Exception {
+    Path source = temporary.newFile("app.html").toPath();
+    Path target = temporary.getRoot().toPath().resolve("staged");
+    IOException failure =
+        assertThrows(IOException.class, () -> ApplicationFiles.stage(source, target));
+    assertTrue(failure.getMessage().contains("not a directory"));
+    assertFalse(Files.exists(target));
+  }
+
+  @Test
   public void rejectsFilesystemRootAsDestination() throws Exception {
     Path app = temporary.newFolder("app").toPath();
     IOException failure =
