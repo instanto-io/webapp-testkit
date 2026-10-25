@@ -26,11 +26,12 @@ jobs:
     env:
       # Install the revisions selected by the Java and Node Playwright drivers.
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '0'
-      PLAYWRIGHT_BROWSERS_PATH: ${{ runner.temp }}/testkit-${{ matrix.browser_name }}-${{ github.run_id }}
       # Read and published snapshots live on packages.instanto.io.
       FORGEJO_PACKAGE_USER: ${{ secrets.FORGEJO_PACKAGE_USER }}
       FORGEJO_PACKAGE_TOKEN: ${{ secrets.FORGEJO_PACKAGE_TOKEN }}
     steps:
+      - name: Allocate job-local browser cache
+        run: echo "PLAYWRIGHT_BROWSERS_PATH=$RUNNER_TEMP/testkit-${{ matrix.browser_name }}-${{ github.run_id }}" >> "$GITHUB_ENV"
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
