@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   packages: write
+  security-events: write
 
 jobs:
   verify:
@@ -91,6 +92,14 @@ jobs:
           : "${SONAR_TOKEN:?SONAR_TOKEN is required for the main-branch quality gate}"
           mvn -B -ntp sonar:sonar -Dsonar.projectKey=webapp-testkit \
             -Dsonar.projectName=webapp-testkit -Dsonar.qualitygate.wait=true
+      - name: Publish quality summary
+        # One browser leg owns the analysis and the code-scanning category.
+        if: always() && matrix.browser_name == 'Chrome'
+        continue-on-error: true
+        uses: instanto-io/instanto-poms/.github/actions/quality-summary@main
+        with:
+          sonar-project-key: webapp-testkit
+          sonar-token: ${{ secrets.SONAR_READ_TOKEN || secrets.SONAR_TOKEN }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:
