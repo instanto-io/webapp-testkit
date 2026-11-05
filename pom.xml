@@ -55,6 +55,7 @@
   </scm>
 
   <properties>
+    <instanto.repository>webapp-testkit</instanto.repository>
     <sonar.coverageReportPaths>${maven.multiModuleProjectDirectory}/target/browser-coverage.xml</sonar.coverageReportPaths>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>21</maven.compiler.release>
