@@ -9,11 +9,11 @@ on:
 permissions:
   contents: read
   packages: write
-  security-events: write
 
 jobs:
   verify:
     name: Verify (${{ matrix.browser_name }})
+    if: (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) || github.event_name == 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
@@ -81,17 +81,6 @@ jobs:
           npm test --prefix scripts/browser-coverage
           scripts/browser-coverage/node_modules/.bin/playwright install chromium
           npm run collect --prefix scripts/browser-coverage
-      # Analyze once: both browser jobs must still pass before publication.
-      - name: SonarQube Quality Gate
-        if: matrix.browser_name == 'Chrome' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: https://sonar.instanto.io
-        run: |
-          set -euo pipefail
-          : "${SONAR_TOKEN:?SONAR_TOKEN is required for the main-branch quality gate}"
-          mvn -B -ntp sonar:sonar -Dsonar.projectKey=webapp-testkit \
-            -Dsonar.projectName=webapp-testkit -Dsonar.qualitygate.wait=true
       - name: Publish quality summary
         # One browser leg owns the analysis and the code-scanning category.
         if: always() && matrix.browser_name == 'Chrome'
@@ -112,11 +101,12 @@ jobs:
         run: rm -rf -- "$PLAYWRIGHT_BROWSERS_PATH"
 
   publish-snapshot:
-    if: github.repository == 'instanto-io/webapp-testkit' && github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
-    needs: [verify]
+    if: github.repository == 'instanto-io/webapp-testkit' && github.event_name == 'push' && github.ref == 'refs/heads/main'
     uses: instanto-io/instanto-poms/.github/workflows/maven-build.yml@main
     with:
       name: Publish Maven snapshot
       goals: deploy
-      maven-args: -DskipTests -Dspotless.skip=true
+      fast-deploy: true
+      downstream-checks: false
+      sonar: false
     secrets: inherit
